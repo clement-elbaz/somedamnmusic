@@ -13,6 +13,13 @@ public interface DatabaseService {
 	ByteString get(String key);
 	
 	/**
+	 * Remove data.
+	 * 
+	 * @param key
+	 */
+	void remove(String key);
+	
+	/**
 	 * Setter.
 	 * 
 	 * @param key

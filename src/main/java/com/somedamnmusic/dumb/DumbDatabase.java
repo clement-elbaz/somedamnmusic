@@ -27,4 +27,8 @@ public class DumbDatabase implements DatabaseService {
 		return "key_"+count;
 	}
 
+	public void remove(String key) {
+		database.remove(key);
+	}
+
 }

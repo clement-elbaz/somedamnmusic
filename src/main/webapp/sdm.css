@@ -1,9 +1,10 @@
 body {
   padding-top: 50px;
 }
-.starter-template {
+.signup {
   padding: 40px 15px;
-  text-align: center;
+  width:600px;
+  text-align: left;
 }
 
 /* CUSTOMIZE THE CAROUSEL
