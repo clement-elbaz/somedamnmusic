@@ -1,5 +1,8 @@
 package com.somedamnmusic.pages;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.inject.Inject;
 import com.google.protobuf.ByteString;
 import com.google.sitebricks.At;
@@ -25,6 +28,9 @@ public class SignupComplete {
 	
 	@Post
 	public String post() {
+		if(!validate()) {
+			return "http://you.little.hacker.com";
+		}
 		ByteString content = db.get(token);
 		
 		if(content != null) {
@@ -48,24 +54,30 @@ public class SignupComplete {
 		return "/signupcomplete";
 	}
 	
+	private boolean validate() {
+		return StringUtils.isNotBlank(firstname)
+				&& StringUtils.isNotBlank(lastname)
+				&& StringUtils.isNotBlank(token);
+	}
+	
 	
 	public String getToken() {
 		return token;
 	}
 	public void setToken(String token) {
-		this.token = token;
+		this.token = StringEscapeUtils.escapeHtml4(token);
 	}
 	public String getFirstname() {
 		return firstname;
 	}
 	public void setFirstname(String firstname) {
-		this.firstname = firstname;
+		this.firstname = StringEscapeUtils.escapeHtml4(firstname);
 	}
 	public String getLastname() {
 		return lastname;
 	}
 	public void setLastname(String lastname) {
-		this.lastname = lastname;
+		this.lastname = StringEscapeUtils.escapeHtml4(lastname);
 	}
 
 }

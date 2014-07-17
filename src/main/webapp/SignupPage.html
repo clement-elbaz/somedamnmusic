@@ -56,12 +56,12 @@
 			<label> Email : ${email}</label>
 			<br/>
 			<label for="inputFirstname">First name : </label>
-			<input class="form-control" id="inputFirstname" name="firstname" type="text" value=""/>
+			<input class="form-control" id="inputFirstname" name="firstname" type="text" value="" required/>
 			
 			<label for="inputFirstname">Last name : </label>
-			<input class="form-control" id="inputFirstname" name="lastname" type="text" value=""/>
+			<input class="form-control" id="inputFirstname" name="lastname" type="text" value="" required/>
 			
-			<input type="hidden" id="inputToken" name="token" value="${token}"/>
+			<input type="hidden" id="inputToken" name="token" value="${token}" required/>
 			<br/>
 			<button type="submit" class="btn btn-primary">Sign up !</button>
 		
@@ -74,7 +74,7 @@
 	</div>
     
 	
-	This website was hacked together by <a href="http://clement-elbaz.net">Clément Elbaz</a> in a few days.
+	This website was hacked together by <a href="http://clement-elbaz.net">Clément Elbaz</a> in a few days during summer 2014.
 	
 
     

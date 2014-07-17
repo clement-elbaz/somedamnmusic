@@ -6,7 +6,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
-import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.SessionScoped;
 import com.google.sitebricks.SitebricksModule;
 import com.somedamnmusic.apis.DatabaseService;
@@ -20,7 +19,7 @@ import com.somedamnmusic.jobs.LoginJob.LoginJobFactory;
 import com.somedamnmusic.pages.MainPage;
 import com.somedamnmusic.session.Session;
 
-public class AppConfig extends GuiceServletContextListener {
+public class AppConfig extends com.google.inject.servlet.GuiceServletContextListener {
 
 	@Override
 	protected Injector getInjector() {

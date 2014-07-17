@@ -1,5 +1,8 @@
 package com.somedamnmusic.pages;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.inject.Inject;
 import com.google.sitebricks.At;
 import com.google.sitebricks.http.Post;
@@ -22,9 +25,15 @@ public class SigninComponent {
 	
 	@Post
 	public void post() {
-		System.out.println("Attempt to log with email : "+email);
-		LoginJob job = loginJobFactory.create(email);
-		jobService.launchJob(job);
+		if(validate()) {
+			System.out.println("Attempt to log with email : "+email);
+			LoginJob job = loginJobFactory.create(email);
+			jobService.launchJob(job);
+		}
+	}
+	
+	private boolean validate() {
+		return StringUtils.isNotBlank(email);
 	}
 
 	public String getEmail() {
@@ -32,6 +41,6 @@ public class SigninComponent {
 	}
 
 	public void setEmail(String email) {
-		this.email = email;
+		this.email = StringEscapeUtils.escapeHtml4(email);
 	}
 }
