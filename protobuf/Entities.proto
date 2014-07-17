@@ -2,14 +2,16 @@ package com.somedamnmusic.entities;
 
 message User {
 	optional string email = 1;
-	optional string feed_id = 2;
-	optional string first_name = 3;
-	optional string last_name = 4;
+	optional string what_i_post_feed_id = 2;
+	optional string what_i_follow_feed_id = 3;
+	optional string first_name = 4;
+	optional string last_name = 5;
 }
 
 message Feed {
 	optional string id = 1;
 	repeated string topic_ids = 2;
+	optional string next_id = 3;
 }
 
 message Topic {
@@ -17,8 +19,9 @@ message Topic {
 	repeated string post_ids = 2;
 }
 
-message Post {
+message MusicPost {
 	optional string id = 1;
-	optional string label = 2;
-	optional string youtube_id = 3;
+	optional string poster_id = 2;
+	optional string description = 3;
+	optional string youtube_id = 4;
 }

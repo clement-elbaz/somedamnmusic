@@ -1,0 +1,15 @@
+<html>
+    <body>
+		@Repeat(items=feedPosts, var="post")
+		<div>
+			<h3>${post.posterFirstname} ${post.posterLastname}</h3>
+			${post.description}
+			@ShowIf(post.isYoutube)
+			<p>
+				<iframe width="400" height="225" src="//www.youtube.com/embed/${post.youtubeId}" frameborder="0" allowfullscreen></iframe>
+			</p>
+		</div>
+		@ShowIf(feedPosts.empty)
+		<p>No music... yet !</p>
+	</body>
+</html>

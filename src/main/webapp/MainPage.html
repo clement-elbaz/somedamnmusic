@@ -85,7 +85,7 @@
           <div class="container">
             <div class="carousel-caption">
               <h1>What's going on right now</h1>
-              <p>TODO</p>
+              @DisplayFeed(feedPosts=publicFeed)<ul/>
             </div>
           </div>
         </div>
@@ -97,9 +97,13 @@
 	@ShowIf(logged)
 	<div>
 		<h2>Welcome, ${user.firstName}</h2>
+		@PostMusicButton<ul/>
+		<br/>
+		@DisplayFeed(feedPosts=userFeed)<ul/>
 	</div>
 
 	@SignIn<ul/>
+	@PostMusicModal(returnURL="/")<ul/>
 	
 	This website was hacked together by <a href="http://clement-elbaz.net">Clément Elbaz</a> in a few days during summer 2014.
 	
