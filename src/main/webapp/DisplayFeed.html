@@ -1,14 +1,22 @@
 <html>
     <body>
-		@Repeat(items=feedPosts, var="post")
-		<div>
-			<h3>${post.posterFirstname} ${post.posterLastname}</h3>
-			${post.description}
-			@ShowIf(post.isYoutube)
-			<p>
-				<iframe width="400" height="225" src="//www.youtube.com/embed/${post.youtubeId}" frameborder="0" allowfullscreen></iframe>
-			</p>
-		</div>
+		<ul class="list-group" style="width:650px;">
+			@Repeat(items=feedPosts, var="post")
+			<li class="list-group-item">
+				<div class="media">
+				  
+				  <div class="media-body">
+					<h4 class="media-heading">${post.description}</h4>
+					${post.posterFirstname} ${post.posterLastname}
+				  </div>
+				  <a class="pull-left" href="#">
+					@ShowIf(post.isYoutube)
+					<iframe width="600" height="50" src="//www.youtube.com/embed/${post.youtubeId}" frameborder="0" allowfullscreen></iframe>
+				  </a>
+				</div>
+			</li>
+		</ul>
+		
 		@ShowIf(feedPosts.empty)
 		<p>No music... yet !</p>
 	</body>

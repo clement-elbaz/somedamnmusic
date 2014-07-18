@@ -8,6 +8,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.somedamnmusic.apis.DatabaseService;
 import com.somedamnmusic.apis.FeedService;
+import com.somedamnmusic.apis.FeedService.FeedType;
 import com.somedamnmusic.entities.Entities.Feed;
 import com.somedamnmusic.entities.Entities.MusicPost;
 import com.somedamnmusic.entities.Entities.Topic;
@@ -83,7 +84,12 @@ public class PostMusicJob implements Runnable {
 		
 		if(needToCreateFeed) {
 			Feed.Builder newFeed = Feed.newBuilder();
-			newFeed.setId(db.getRandomkey());
+			if(feedType.isConstant()) {
+				newFeed.setId(feedId);
+			} else {
+				newFeed.setId(db.getRandomkey());
+			}
+			
 			feed = newFeed.build();
 			db.set(feed.getId(), feed.toByteString());
 			if(!FeedType.PUBLIC.equals(feedType)) {
@@ -115,10 +121,6 @@ public class PostMusicJob implements Runnable {
 		PostMusicJob create(MusicPost musicPost);
 	}
 	
-	public static enum FeedType {
-		WHAT_I_FOLLOW,
-		WHAT_I_POST,
-		PUBLIC;
-	}
+	
 
 }

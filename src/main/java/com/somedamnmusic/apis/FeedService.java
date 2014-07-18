@@ -121,4 +121,26 @@ public class FeedService {
 		return StringUtils.isNotBlank(feedId) || justPostedMusic != null;
 	}
 	
+	public static enum FeedType {
+		WHAT_I_FOLLOW(false, false),
+		WHAT_I_POST(true, false),
+		PUBLIC(false, true);
+		
+		private final boolean persistent;
+		private final boolean constant;
+		
+		private FeedType(boolean persistent, boolean constant) {
+			this.persistent = persistent;
+			this.constant = constant;
+		}
+
+		public boolean isPersistent() {
+			return persistent;
+		}
+
+		public boolean isConstant() {
+			return constant;
+		}
+	}
+	
 }
