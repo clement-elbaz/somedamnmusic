@@ -1,6 +1,6 @@
 package com.somedamnmusic.jobs;
 
-public class JobServiceImpl implements JobService {
+public class SimpleJobService implements JobService {
 
 	public void launchJob(Runnable runnable) {
 		// no thread pool in the beginning

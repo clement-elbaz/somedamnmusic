@@ -9,10 +9,8 @@ import com.google.inject.Inject;
 import com.google.sitebricks.At;
 import com.google.sitebricks.http.Post;
 import com.somedamnmusic.apis.DatabaseService;
+import com.somedamnmusic.apis.exception.DatabaseException;
 import com.somedamnmusic.entities.Entities.MusicPost;
-import com.somedamnmusic.jobs.JobService;
-import com.somedamnmusic.jobs.PostMusicJob;
-import com.somedamnmusic.jobs.PostMusicJob.PostMusicJobFactory;
 import com.somedamnmusic.session.Session;
 
 @At("/postmusic")
@@ -36,7 +34,11 @@ public class PostMusicComplete {
 	public String post() {
 		if(validate()) {
 			if(StringUtils.isNotBlank(youtubeURL)) {
-				processYoutube();
+				try {
+					processYoutube();
+				} catch (DatabaseException e) {
+					e.printStackTrace(); // TODO log
+				}
 			}
 			
 		}
@@ -44,14 +46,14 @@ public class PostMusicComplete {
 		return returnURL;
 	}
 	
-	private void processYoutube() {
+	private void processYoutube() throws DatabaseException {
 		try {
 			String youtubeId = parseYoutubeURL(youtubeURL);
 			
 			MusicPost.Builder newPost = MusicPost.newBuilder();
 			
 			newPost.setId(db.getRandomkey());
-			newPost.setPosterId(session.getUser().getEmail());
+			newPost.setPosterId(session.getUser().getUserId());
 			newPost.setDescription(description);
 			newPost.setYoutubeId(youtubeId);
 			
@@ -59,9 +61,8 @@ public class PostMusicComplete {
 			
 			session.setJustPostedMusic(newPostCompleted);
 		} catch (ParseException e) {
-			e.printStackTrace();
 			// TODO warn user
-			// TODO log
+			e.printStackTrace(); // TODO log
 		}
 	}
 	

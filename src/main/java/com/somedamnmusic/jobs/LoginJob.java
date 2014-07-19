@@ -5,6 +5,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.protobuf.ByteString;
 import com.somedamnmusic.apis.DatabaseService;
 import com.somedamnmusic.apis.MailService;
+import com.somedamnmusic.apis.exception.DatabaseException;
 
 public class LoginJob implements Runnable {
 	
@@ -20,10 +21,14 @@ public class LoginJob implements Runnable {
 	}
 
 	public void run() {
-		String token = databaseService.getRandomkey();
-		
-		databaseService.set(token, ByteString.copyFromUtf8(email));
-		mailService.sendLoginEmail(token);
+		String token;
+		try {
+			token = databaseService.getRandomkey();
+			databaseService.set(token, ByteString.copyFromUtf8(email));
+			mailService.sendLoginEmail(token);
+		} catch (DatabaseException e) {
+			e.printStackTrace(); // TODO log
+		}
 	}
 	
 	public interface LoginJobFactory {

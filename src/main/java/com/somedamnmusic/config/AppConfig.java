@@ -13,7 +13,7 @@ import com.somedamnmusic.apis.MailService;
 import com.somedamnmusic.dumb.DumbDatabase;
 import com.somedamnmusic.dumb.DumbMailService;
 import com.somedamnmusic.jobs.JobService;
-import com.somedamnmusic.jobs.JobServiceImpl;
+import com.somedamnmusic.jobs.SimpleJobService;
 import com.somedamnmusic.jobs.LoginJob;
 import com.somedamnmusic.jobs.LoginJob.LoginJobFactory;
 import com.somedamnmusic.jobs.PostMusicJob;
@@ -46,7 +46,7 @@ public class AppConfig extends com.google.inject.servlet.GuiceServletContextList
 			                bind(MailService.class).to(DumbMailService.class);
 			                bind(DatabaseService.class).to(DumbDatabase.class);
 			                
-			                bind(JobService.class).to(JobServiceImpl.class);
+			                bind(JobService.class).to(SimpleJobService.class);
 			            }
 				}
 		);

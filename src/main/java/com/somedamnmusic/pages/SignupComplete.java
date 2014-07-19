@@ -8,12 +8,15 @@ import com.google.protobuf.ByteString;
 import com.google.sitebricks.At;
 import com.google.sitebricks.http.Post;
 import com.somedamnmusic.apis.DatabaseService;
+import com.somedamnmusic.apis.UserService;
+import com.somedamnmusic.apis.exception.DatabaseException;
 import com.somedamnmusic.entities.Entities.User;
 import com.somedamnmusic.session.Session;
 
 @At("/signupcomplete")
 public class SignupComplete {
 	private final DatabaseService db;
+	private final UserService userService;
 	private final Session session;
 	
 	private String token;
@@ -21,8 +24,9 @@ public class SignupComplete {
 	private String lastname;
 	
 	@Inject
-	public SignupComplete(DatabaseService db, Session session) {
+	public SignupComplete(DatabaseService db, UserService userService, Session session) {
 		this.db = db;
+		this.userService = userService;
 		this.session = session;
 	}
 	
@@ -31,24 +35,29 @@ public class SignupComplete {
 		if(!validate()) {
 			return "http://you.little.hacker.com";
 		}
-		ByteString content = db.get(token);
-		
-		if(content != null) {
-			String email = content.toStringUtf8();
+		try {
+			ByteString content = db.get(token);
 			
-			User.Builder newUser = User.newBuilder();
-			
-			newUser.setEmail(email);
-			newUser.setFirstName(firstname);
-			newUser.setLastName(lastname);
-			
-			User newUserCompleted = newUser.build();
-			
-			db.set(newUserCompleted.getEmail(), newUserCompleted.toByteString());
-			session.setUser(newUserCompleted);
-			db.remove(token);
-			
-			return "/";
+			if(content != null) {
+				String email = content.toStringUtf8();
+				
+				User.Builder newUser = User.newBuilder();
+				
+				newUser.setUserId(db.getRandomkey());
+				newUser.setEmail(email);
+				newUser.setFirstName(firstname);
+				newUser.setLastName(lastname);
+				
+				User newUserCompleted = newUser.build();
+				
+				userService.storeUser(newUserCompleted);
+				session.setUser(newUserCompleted);
+				db.remove(token);
+				
+				return "/";
+			}
+		} catch (DatabaseException e) {
+			e.printStackTrace(); // TODO log
 		}
 		
 		return "/signupcomplete";

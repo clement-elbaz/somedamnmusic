@@ -9,6 +9,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import com.somedamnmusic.apis.DatabaseService;
 import com.somedamnmusic.apis.FeedService;
 import com.somedamnmusic.apis.FeedService.FeedType;
+import com.somedamnmusic.apis.UserService;
+import com.somedamnmusic.apis.exception.DatabaseException;
 import com.somedamnmusic.entities.Entities.Feed;
 import com.somedamnmusic.entities.Entities.MusicPost;
 import com.somedamnmusic.entities.Entities.Topic;
@@ -17,28 +19,34 @@ import com.somedamnmusic.session.Session;
 
 public class PostMusicJob implements Runnable {
 	private final DatabaseService db;
+	private final UserService userService;
 	private final Session session;
 	private final MusicPost musicPost;
 	
 	@Inject
-	public PostMusicJob(DatabaseService db, Session session, @Assisted MusicPost musicPost) {
+	public PostMusicJob(DatabaseService db, UserService userService, Session session, @Assisted MusicPost musicPost) {
 		this.db = db;
+		this.userService = userService;
 		this.session = session;
 		this.musicPost = musicPost;
 	}
 
 	@Override
 	public void run() {
-		db.set(musicPost.getId(), musicPost.toByteString());
-		
-		Topic topic = this.createNewTopic();
-		
-		this.postOnFeed(topic, this.session.getUser().getWhatIPostFeedId(), FeedType.WHAT_I_POST);
-		this.postOnFeed(topic, this.session.getUser().getWhatIFollowFeedId(), FeedType.WHAT_I_FOLLOW);
-		this.postOnFeed(topic, FeedService.PUBLIC_GLOBAL_FEED, FeedType.PUBLIC);
+		try {
+			db.set(musicPost.getId(), musicPost.toByteString());
+			
+			Topic topic = this.createNewTopic();
+			
+			this.postOnFeed(topic, this.session.getUser().getWhatIPostFeedId(), FeedType.WHAT_I_POST);
+			this.postOnFeed(topic, this.session.getUser().getWhatIFollowFeedId(), FeedType.WHAT_I_FOLLOW);
+			this.postOnFeed(topic, FeedService.PUBLIC_GLOBAL_FEED, FeedType.PUBLIC);
+		} catch (DatabaseException e) {
+			e.printStackTrace(); // TODO log
+		}
 	}
 	
-	private Topic createNewTopic() {
+	private Topic createNewTopic() throws DatabaseException {
 		Topic.Builder newTopic = Topic.newBuilder();
 		newTopic.setId(db.getRandomkey());
 		newTopic.addPostIds(musicPost.getId());
@@ -50,7 +58,7 @@ public class PostMusicJob implements Runnable {
 		return topic;
 	}
 	
-	private void postOnFeed(Topic topic, String feedId, FeedType feedType) {
+	private void postOnFeed(Topic topic, String feedId, FeedType feedType) throws DatabaseException {
 		Feed feed = this.getFeed(feedId, feedType);
 		
 		Feed.Builder updatedFeed = feed.toBuilder();
@@ -60,7 +68,7 @@ public class PostMusicJob implements Runnable {
 		db.set(feed.getId(), updatedFeed.build().toByteString());
 	}
 	
-	private Feed getFeed(String feedId, FeedType feedType) {
+	private Feed getFeed(String feedId, FeedType feedType) throws DatabaseException {
 		boolean needToCreateFeed;
 		Feed feed = null;
 		if(StringUtils.isNotBlank(feedId)) {
@@ -100,7 +108,7 @@ public class PostMusicJob implements Runnable {
 		return feed;
 	}
 	
-	private void updateUser(Feed feed, FeedType feedType) {
+	private void updateUser(Feed feed, FeedType feedType) throws DatabaseException {
 		User.Builder updatedUser = this.session.getUser().toBuilder();
 		
 		if(FeedType.WHAT_I_FOLLOW.equals(feedType)) {
@@ -113,7 +121,7 @@ public class PostMusicJob implements Runnable {
 		
 		User user = updatedUser.build();
 		
-		db.set(user.getEmail(), user.toByteString());
+		userService.storeUser(user);
 		session.setUser(user);
 	}
 

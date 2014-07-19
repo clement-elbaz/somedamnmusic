@@ -1,11 +1,12 @@
 package com.somedamnmusic.entities;
 
 message User {
-	optional string email = 1;
-	optional string what_i_post_feed_id = 2;
-	optional string what_i_follow_feed_id = 3;
-	optional string first_name = 4;
-	optional string last_name = 5;
+	optional string user_id = 1;
+	optional string email = 2;
+	optional string what_i_post_feed_id = 3;
+	optional string what_i_follow_feed_id = 4;
+	optional string first_name = 5;
+	optional string last_name = 6;
 }
 
 message Feed {
