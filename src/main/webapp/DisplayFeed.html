@@ -7,11 +7,11 @@
 				  
 				  <div class="media-body">
 					<h4 class="media-heading">${post.description}</h4>
-					${post.posterFirstname} ${post.posterLastname}
+					@DisplayName(firstname=post.posterFirstname, lastname=post.posterLastname)<ul/>
 				  </div>
 				  <a class="pull-left" href="#">
 					@ShowIf(post.isYoutube)
-					<iframe width="600" height="50" src="//www.youtube.com/embed/${post.youtubeId}" frameborder="0" allowfullscreen></iframe>
+					<iframe width="600" height="100" src="//www.youtube.com/embed/${post.youtubeId}" frameborder="0" allowfullscreen></iframe>
 				  </a>
 				</div>
 			</li>
