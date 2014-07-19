@@ -83,6 +83,7 @@ public class FeedService {
 
 			FeedPost feedPost = new FeedPost();
 
+			feedPost.posterId = posterUser.getUserId();
 			feedPost.posterFirstname = posterUser.getFirstName();
 			feedPost.posterLastname = posterUser.getLastName();
 			feedPost.description = musicPost.getDescription();

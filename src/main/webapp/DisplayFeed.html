@@ -7,7 +7,7 @@
 				  
 				  <div class="media-body">
 					<h4 class="media-heading">${post.description}</h4>
-					@DisplayName(firstname=post.posterFirstname, lastname=post.posterLastname)<ul/>
+					@DisplayName(userId=post.posterId, firstname=post.posterFirstname, lastname=post.posterLastname)<ul/>
 				  </div>
 				  <a class="pull-left" href="#">
 					@ShowIf(post.isYoutube)

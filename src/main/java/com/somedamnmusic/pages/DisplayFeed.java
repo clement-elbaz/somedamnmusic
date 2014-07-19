@@ -13,6 +13,7 @@ public class DisplayFeed {
 	public static class FeedPost {
 		public String posterFirstname;
 		public String posterLastname;
+		public String posterId;
 		public String description;
 		public boolean isYoutube;
 		public String youtubeId;

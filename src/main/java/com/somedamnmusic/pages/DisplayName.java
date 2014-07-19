@@ -6,6 +6,7 @@ import com.google.sitebricks.rendering.EmbedAs;
 public class DisplayName {
 	private String firstname;
 	private String lastname;
+	private String userId;
 
 	public String getFirstname() {
 		return firstname;
@@ -21,6 +22,14 @@ public class DisplayName {
 
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 }

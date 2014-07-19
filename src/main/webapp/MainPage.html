@@ -46,7 +46,7 @@
 			@ShowIf(!logged)
 			<li><a  data-toggle="modal" style="cursor:pointer;" data-target="#signinModal">Sign in</a></li>
 			@ShowIf(logged)
-			<li><a href="/profile/${user.firstName}/${user.lastName}">My profile</a>
+			<li><a href="/profile/${user.userId}">My profile</a>
 			@ShowIf(logged)
 			<li><a href="/signout">Log out</a>
           </ul>
