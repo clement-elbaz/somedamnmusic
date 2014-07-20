@@ -15,6 +15,12 @@ public class UserService {
 		this.db = db;
 	}
 	
+	/**
+	 * Get a user from his id.
+	 * @param id
+	 * @return
+	 * @throws NoUserException
+	 */
 	public User getUserFromId(String id) throws NoUserException {
 		ByteString content;
 		try {
@@ -32,6 +38,13 @@ public class UserService {
 		
 	}
 	
+	/**
+	 * Get a user from his email.
+	 * 
+	 * @param email
+	 * @return
+	 * @throws NoUserException
+	 */
 	public User getUserFromEmail(String email) throws NoUserException {
 		try {
 			ByteString id = db.get(email);
@@ -44,6 +57,12 @@ public class UserService {
 		}
 	}
 	
+	/**
+	 * Store a user. Please call asynchronously.
+	 * 
+	 * @param user
+	 * @throws DatabaseException
+	 */
 	public void storeUser(User user) throws DatabaseException {
 		db.set(user.getUserId(), user.toByteString());
 		db.set(user.getEmail(), ByteString.copyFromUtf8(user.getUserId()));

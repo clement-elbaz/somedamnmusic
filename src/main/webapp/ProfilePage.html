@@ -45,7 +45,7 @@
 			@ShowIf(!logged)
 			<li><a  data-toggle="modal" style="cursor:pointer;" data-target="#signinModal">Sign in</a></li>
 			@ShowIf(logged)
-			<li><a href="/profile/${user.firstName}/${user.lastName}">My profile</a>
+			<li><a href="/profile/${thisUserId}">My profile</a>
 			@ShowIf(logged)
 			<li><a href="/signout">Log out</a>
           </ul>
@@ -56,6 +56,7 @@
 	@ShowIf(userExists)
 	<div style="margin-left:150px;">
 		<h2>${user.firstName} ${user.lastName}'s profile</h2>
+		@FollowButton(followedUserId=user.userId, returnURL=profileURL)<ul/>
 		<br/>
 		@DisplayFeed(feedPosts=feed)<ul/>
 	</div>

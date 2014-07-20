@@ -1,0 +1,12 @@
+<html>
+	<body>
+		@ShowIf(followable)
+		<form role="form" action="/follow" method="post">
+			<input type="hidden" id="followingUserId" name="followedUserId"
+				value="${followedUserId}" required />
+				<input type="hidden" id="returnURL" name="returnURL"
+				value="${returnURL}" required />
+			<button type="submit" class="btn btn-primary">Follow this dude !</button>
+		</form>
+	</body>
+</html>

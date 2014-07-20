@@ -4,10 +4,11 @@ import com.somedamnmusic.entities.Entities.MusicPost;
 import com.somedamnmusic.entities.Entities.User;
 
 public class Session {
-	
+
 	private User user;
 	private MusicPost justPostedMusic;
-	
+	private User justFollowedUser;
+
 	public User getUser() {
 		return user;
 	}
@@ -25,5 +26,16 @@ public class Session {
 
 	public void setJustPostedMusic(MusicPost justPostedMusic) {
 		this.justPostedMusic = justPostedMusic;
+	}
+
+	public void setJustFollowedUser(User followedUser) {
+		this.justFollowedUser = followedUser;
+	}
+	
+	public User getJustFollowedUser() {
+		// we make sure the just followed user doesn't stay in session
+		User result = justFollowedUser;
+		justFollowedUser = null;
+		return result;
 	}
 }

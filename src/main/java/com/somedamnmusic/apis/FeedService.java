@@ -38,6 +38,11 @@ public class FeedService {
 		this.postMusicJobFactory = postMusicJobFactory;
 	}
 
+	/**
+	 * Get a feed.
+	 * @param feedId
+	 * @return
+	 */
 	public List<FeedPost> getFeed(String feedId) {
 		MusicPost justPostedMusic = session.getJustPostedMusic();
 		if(!validate(feedId, justPostedMusic)) {

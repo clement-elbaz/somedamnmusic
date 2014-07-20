@@ -18,6 +18,8 @@ import com.somedamnmusic.jobs.LoginJob;
 import com.somedamnmusic.jobs.LoginJob.LoginJobFactory;
 import com.somedamnmusic.jobs.PostMusicJob;
 import com.somedamnmusic.jobs.PostMusicJob.PostMusicJobFactory;
+import com.somedamnmusic.jobs.UpdateUserJob;
+import com.somedamnmusic.jobs.UpdateUserJob.UpdateUserJobFactory;
 import com.somedamnmusic.pages.MainPage;
 import com.somedamnmusic.session.Session;
 
@@ -42,6 +44,10 @@ public class AppConfig extends com.google.inject.servlet.GuiceServletContextList
 			                install(new FactoryModuleBuilder()
 			                .implement(PostMusicJob.class, PostMusicJob.class)
 			                .build(PostMusicJobFactory.class));
+			                
+			                install(new FactoryModuleBuilder()
+			                .implement(UpdateUserJob.class, UpdateUserJob.class)
+			                .build(UpdateUserJobFactory.class));
 			                
 			                bind(MailService.class).to(DumbMailService.class);
 			                bind(DatabaseService.class).to(DumbDatabase.class);

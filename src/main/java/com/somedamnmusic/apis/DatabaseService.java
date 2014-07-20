@@ -6,7 +6,7 @@ import com.somedamnmusic.apis.exception.DatabaseException;
 public interface DatabaseService {
 	
 	/**
-	 * Getter.
+	 * Get some data.
 	 * 
 	 * @param key
 	 * @return
@@ -21,7 +21,7 @@ public interface DatabaseService {
 	void remove(String key) throws DatabaseException;
 	
 	/**
-	 * Setter.
+	 * Set some data.
 	 * 
 	 * @param key
 	 * @param content

@@ -7,6 +7,8 @@ message User {
 	optional string what_i_follow_feed_id = 4;
 	optional string first_name = 5;
 	optional string last_name = 6;
+	repeated string followers = 7;
+	repeated string followings = 8;
 }
 
 message Feed {
