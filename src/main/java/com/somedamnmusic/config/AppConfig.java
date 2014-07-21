@@ -32,8 +32,6 @@ public class AppConfig extends com.google.inject.servlet.GuiceServletContextList
 			         protected void configureSitebricks() {
 			                // scan class Example's package and all descendants
 			                scan(MainPage.class.getPackage());
-			                //Injection value of message
-			                bindConstant().annotatedWith(Names.named("message")).to("Hello Woooorld");
 			                
 			                bind(Session.class).in(SessionScoped.class);
 			                
