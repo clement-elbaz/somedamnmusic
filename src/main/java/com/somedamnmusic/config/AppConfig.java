@@ -5,7 +5,6 @@ package com.somedamnmusic.config;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.google.inject.name.Names;
 import com.google.inject.servlet.SessionScoped;
 import com.google.sitebricks.SitebricksModule;
 import com.somedamnmusic.apis.DatabaseService;
@@ -13,11 +12,13 @@ import com.somedamnmusic.apis.MailService;
 import com.somedamnmusic.dumb.DumbDatabase;
 import com.somedamnmusic.dumb.DumbMailService;
 import com.somedamnmusic.jobs.JobService;
-import com.somedamnmusic.jobs.SimpleJobService;
 import com.somedamnmusic.jobs.LoginJob;
 import com.somedamnmusic.jobs.LoginJob.LoginJobFactory;
 import com.somedamnmusic.jobs.PostMusicJob;
 import com.somedamnmusic.jobs.PostMusicJob.PostMusicJobFactory;
+import com.somedamnmusic.jobs.PostMusicOnFeedJob;
+import com.somedamnmusic.jobs.PostMusicOnFeedJob.PostMusicOnFeedJobFactory;
+import com.somedamnmusic.jobs.SimpleJobService;
 import com.somedamnmusic.jobs.UpdateUserJob;
 import com.somedamnmusic.jobs.UpdateUserJob.UpdateUserJobFactory;
 import com.somedamnmusic.pages.MainPage;
@@ -42,6 +43,10 @@ public class AppConfig extends com.google.inject.servlet.GuiceServletContextList
 			                install(new FactoryModuleBuilder()
 			                .implement(PostMusicJob.class, PostMusicJob.class)
 			                .build(PostMusicJobFactory.class));
+			                
+			                install(new FactoryModuleBuilder()
+			                .implement(PostMusicOnFeedJob.class, PostMusicOnFeedJob.class)
+			                .build(PostMusicOnFeedJobFactory.class));
 			                
 			                install(new FactoryModuleBuilder()
 			                .implement(UpdateUserJob.class, UpdateUserJob.class)

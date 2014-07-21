@@ -55,11 +55,11 @@
 		<form role="form" action="/signupcomplete" method="post">
 			<label> Email : ${email}</label>
 			<br/>
-			<label for="inputFirstname">First name : </label>
+			<label for="inputFirstname">First name / Nickname : </label>
 			<input class="form-control" id="inputFirstname" name="firstname" type="text" value="" required/>
 			
-			<label for="inputFirstname">Last name : </label>
-			<input class="form-control" id="inputFirstname" name="lastname" type="text" value="" required/>
+			<label for="inputFirstname">Last name (not mandatory) : </label>
+			<input class="form-control" id="inputFirstname" name="lastname" type="text" value=""/>
 			
 			<input type="hidden" id="inputToken" name="token" value="${token}" required/>
 			<br/>

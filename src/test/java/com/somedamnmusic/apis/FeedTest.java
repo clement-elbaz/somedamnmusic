@@ -18,7 +18,8 @@ import com.somedamnmusic.entities.Entities.User;
 import com.somedamnmusic.jobs.JobService;
 import com.somedamnmusic.jobs.PostMusicJob;
 import com.somedamnmusic.jobs.PostMusicJob.PostMusicJobFactory;
-import com.somedamnmusic.jobs.SimpleJobService;
+import com.somedamnmusic.jobs.PostMusicOnFeedJob;
+import com.somedamnmusic.jobs.PostMusicOnFeedJob.PostMusicOnFeedJobFactory;
 import com.somedamnmusic.pages.DisplayFeed.FeedPost;
 import com.somedamnmusic.session.Session;
 
@@ -40,7 +41,11 @@ public class FeedTest {
 				.implement(PostMusicJob.class, PostMusicJob.class)
 				.build(PostMusicJobFactory.class));
 				
-				bind(JobService.class).to(SimpleJobService.class);
+				install(new FactoryModuleBuilder()
+                .implement(PostMusicOnFeedJob.class, PostMusicOnFeedJob.class)
+                .build(PostMusicOnFeedJobFactory.class));
+				
+				bind(JobService.class).to(SynchronousJobService.class);
 				
 				bind(Session.class).asEagerSingleton();
 			}
@@ -57,12 +62,14 @@ public class FeedTest {
 
 	@Test
 	public void feedTest() {
-		User user = this.provideUser();
+		User user;
 		try {
+			user = this.provideUser();
 			userService.storeUser(user);
-			session.setUser(user);
+			session.setUserId(user.getUserId());
 		} catch (DatabaseException e) {
 			Assert.fail(e.toString());
+			return;
 		}
 
 		MusicPost musicPost = this.provideMusicPost(user);
@@ -98,13 +105,15 @@ public class FeedTest {
 		return musicPost.build();
 	}
 
-	private User provideUser() {
+	private User provideUser() throws DatabaseException {
 		User.Builder user = User.newBuilder();
 
 		user.setUserId("some_id");
 		user.setEmail("toto@toto.com");
 		user.setFirstName("Bob");
 		user.setLastName("Morane");
+		user.setWhatIFollowFeedId(feedService.createFeed());
+		user.setWhatIPostFeedId(feedService.createFeed());
 		return user.build();
 	}
 

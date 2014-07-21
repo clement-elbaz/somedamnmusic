@@ -21,6 +21,7 @@ public class ProfilePage {
 	private final FollowService followService;
 	private final Session session;
 	
+	private User currentUser;
 	private User user;
 	private List<FeedPost> feed;
 	
@@ -30,14 +31,20 @@ public class ProfilePage {
 		this.feedService = feedService;
 		this.followService = followService;
 		this.session = session;
+		
+		try {
+			this.currentUser = userService.getUserFromId(session.getUserId());
+		} catch (NoUserException e) {
+			// TODO log
+		}
 	}
 	
 	@Get
 	public void get(@Named("userId")String userId) {
 		User followedUser = this.session.getJustFollowedUser();
 		if(followedUser != null) {
-			this.session.setUser(followService.followUser(this.session.getUser(), followedUser));
-			System.out.println(this.session.getUser().getFirstName()+" just followed "+followedUser.getFirstName());
+			followService.followUser(currentUser, followedUser);
+			System.out.println(currentUser.getFirstName()+" just followed "+followedUser.getFirstName());
 		}
 		
 		try {
@@ -49,7 +56,7 @@ public class ProfilePage {
 	}
 	
 	public boolean isLogged() {
-		return this.session.getUser() != null;
+		return this.currentUser != null;
 	}
 	
 	public boolean isUserExists() {
@@ -65,8 +72,8 @@ public class ProfilePage {
 	}
 	
 	public String getThisUserId() {
-		if(session.getUser() != null) {
-			return session.getUser().getUserId();
+		if(currentUser != null) {
+			return currentUser.getUserId();
 		}
 		return null;
 	}

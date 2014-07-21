@@ -15,6 +15,7 @@ public class FollowComplete {
 	private final UserService userService;
 	private final Session session;
 	
+	private User currentUser;
 	private String followedUserId;
 	private String returnURL;
 	
@@ -22,6 +23,11 @@ public class FollowComplete {
 	public FollowComplete(UserService userService, Session session) {
 		this.userService = userService;
 		this.session = session;
+		try {
+			this.currentUser = userService.getUserFromId(session.getUserId());
+		} catch (NoUserException e) {
+			// TODO log
+		}
 	}
 	
 	@Post
@@ -39,8 +45,8 @@ public class FollowComplete {
 	}
 	
 	private boolean validate() {
-		return session.getUser() != null && StringUtils.isNotBlank(followedUserId)
-				&& !session.getUser().getUserId().equals(followedUserId);
+		return currentUser != null && StringUtils.isNotBlank(followedUserId)
+				&& !currentUser.getUserId().equals(followedUserId);
 	}
 
 	public String getFollowedUserId() {

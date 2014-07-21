@@ -16,7 +16,7 @@ public class Signout {
 	
 	@Get
 	public String get() {
-		this.session.setUser(null);
+		this.session.setUserId(null);
 		return "/";
 	}
 

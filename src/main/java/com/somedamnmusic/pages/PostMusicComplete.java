@@ -9,24 +9,32 @@ import com.google.inject.Inject;
 import com.google.sitebricks.At;
 import com.google.sitebricks.http.Post;
 import com.somedamnmusic.apis.DatabaseService;
+import com.somedamnmusic.apis.UserService;
 import com.somedamnmusic.apis.exception.DatabaseException;
+import com.somedamnmusic.apis.exception.NoUserException;
 import com.somedamnmusic.entities.Entities.MusicPost;
+import com.somedamnmusic.entities.Entities.User;
 import com.somedamnmusic.session.Session;
 
 @At("/postmusic")
 public class PostMusicComplete {
-	private final Session session;
 	private final DatabaseService db;
+	private final Session session;
 	
-	
+	private User currentUser;
 	private String youtubeURL;
 	
 	private String description;
 	private String returnURL;
 	
 	@Inject
-	public PostMusicComplete(Session session, DatabaseService db) {
+	public PostMusicComplete(Session session, UserService userService, DatabaseService db) {
 		this.session = session;
+		try {
+			this.currentUser = userService.getUserFromId(session.getUserId());
+		} catch (NoUserException e) {
+			// TODO log
+		}
 		this.db = db;
 	}
 	
@@ -53,7 +61,7 @@ public class PostMusicComplete {
 			MusicPost.Builder newPost = MusicPost.newBuilder();
 			
 			newPost.setId(db.getRandomkey());
-			newPost.setPosterId(session.getUser().getUserId());
+			newPost.setPosterId(currentUser.getUserId());
 			newPost.setDescription(description);
 			newPost.setYoutubeId(youtubeId);
 			
@@ -102,7 +110,7 @@ public class PostMusicComplete {
 				
 				&& StringUtils.isNotBlank(returnURL)
 				
-				&& session.getUser() != null;
+				&& currentUser != null;
 	}
 
 	public String getYoutubeURL() {

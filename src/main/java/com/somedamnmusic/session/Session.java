@@ -5,16 +5,16 @@ import com.somedamnmusic.entities.Entities.User;
 
 public class Session {
 
-	private User user;
+	private String userId;
 	private MusicPost justPostedMusic;
 	private User justFollowedUser;
 
-	public User getUser() {
-		return user;
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	public MusicPost getJustPostedMusic() {

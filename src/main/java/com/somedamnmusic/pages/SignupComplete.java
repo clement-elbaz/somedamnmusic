@@ -8,6 +8,7 @@ import com.google.protobuf.ByteString;
 import com.google.sitebricks.At;
 import com.google.sitebricks.http.Post;
 import com.somedamnmusic.apis.DatabaseService;
+import com.somedamnmusic.apis.FeedService;
 import com.somedamnmusic.apis.UserService;
 import com.somedamnmusic.apis.exception.DatabaseException;
 import com.somedamnmusic.entities.Entities.User;
@@ -17,6 +18,7 @@ import com.somedamnmusic.session.Session;
 public class SignupComplete {
 	private final DatabaseService db;
 	private final UserService userService;
+	private final FeedService feedService;
 	private final Session session;
 	
 	private String token;
@@ -24,9 +26,10 @@ public class SignupComplete {
 	private String lastname;
 	
 	@Inject
-	public SignupComplete(DatabaseService db, UserService userService, Session session) {
+	public SignupComplete(DatabaseService db, UserService userService, FeedService feedService, Session session) {
 		this.db = db;
 		this.userService = userService;
+		this.feedService = feedService;
 		this.session = session;
 	}
 	
@@ -48,10 +51,13 @@ public class SignupComplete {
 				newUser.setFirstName(firstname);
 				newUser.setLastName(lastname);
 				
+				newUser.setWhatIFollowFeedId(feedService.createFeed());
+				newUser.setWhatIPostFeedId(feedService.createFeed());
+				
 				User newUserCompleted = newUser.build();
 				
 				userService.storeUser(newUserCompleted);
-				session.setUser(newUserCompleted);
+				session.setUserId(newUserCompleted.getUserId());
 				db.remove(token);
 				
 				return "/";
@@ -65,7 +71,6 @@ public class SignupComplete {
 	
 	private boolean validate() {
 		return StringUtils.isNotBlank(firstname)
-				&& StringUtils.isNotBlank(lastname)
 				&& StringUtils.isNotBlank(token);
 	}
 	

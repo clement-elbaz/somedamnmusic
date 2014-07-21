@@ -4,17 +4,24 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Inject;
 import com.google.sitebricks.rendering.EmbedAs;
+import com.somedamnmusic.apis.UserService;
+import com.somedamnmusic.apis.exception.NoUserException;
+import com.somedamnmusic.entities.Entities.User;
 import com.somedamnmusic.session.Session;
 
 @EmbedAs("FollowButton")
 public class FollowButton {
-	private final Session session;
+	private User currentUser;
 	private String followedUserId;
 	private String returnURL;
 	
 	@Inject
-	public FollowButton(Session session) {
-		this.session = session;
+	public FollowButton(Session session, UserService userService) {
+		try {
+			this.currentUser = userService.getUserFromId(session.getUserId());
+		} catch (NoUserException e) {
+			// TODO log
+		}
 	}
 	
 	public String getFollowedUserId() {
@@ -26,9 +33,9 @@ public class FollowButton {
 	
 	public boolean isFollowable() {
 		return StringUtils.isNotBlank(followedUserId) && 
-				session.getUser() != null
-				&& !session.getUser().getUserId().equals(followedUserId)
-				&& !session.getUser().getFollowingsList().contains(followedUserId);
+				currentUser != null
+				&& !currentUser.getUserId().equals(followedUserId)
+				&& !currentUser.getFollowingsList().contains(followedUserId);
 	}
 	
 	public String getReturnURL() {

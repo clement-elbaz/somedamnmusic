@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.somedamnmusic.apis.exception.DatabaseException;
+import com.somedamnmusic.apis.exception.NoFeedException;
 import com.somedamnmusic.apis.exception.NoUserException;
 import com.somedamnmusic.entities.Entities.Feed;
 import com.somedamnmusic.entities.Entities.MusicPost;
@@ -37,6 +38,35 @@ public class FeedService {
 		this.jobService = jobService;
 		this.postMusicJobFactory = postMusicJobFactory;
 	}
+	
+	private void initPublicFeedIfNecessary() {
+		try {
+			if(db.get(PUBLIC_GLOBAL_FEED) == null) {
+				Feed.Builder publicFeed = Feed.newBuilder();
+				publicFeed.setId(PUBLIC_GLOBAL_FEED);
+				db.set(PUBLIC_GLOBAL_FEED, publicFeed.build().toByteString());
+			}
+		} catch (DatabaseException e) {
+			e.printStackTrace(); // TODO log
+		}
+		
+	}
+
+	/**
+	 * Create a new feed.
+	 * @return feedId
+	 * @throws DatabaseException 
+	 */
+	public String createFeed() throws DatabaseException {
+		Feed.Builder feed = Feed.newBuilder();
+		feed.setId(db.getRandomkey());
+		
+		Feed feedComplete = feed.build();
+		
+		db.set(feedComplete.getId(), feedComplete.toByteString());
+		
+		return feedComplete.getId();
+	}
 
 	/**
 	 * Get a feed.
@@ -44,35 +74,32 @@ public class FeedService {
 	 * @return
 	 */
 	public List<FeedPost> getFeed(String feedId) {
+		if(PUBLIC_GLOBAL_FEED.equals(feedId)) {
+			this.initPublicFeedIfNecessary();
+		}
+		
 		MusicPost justPostedMusic = session.getJustPostedMusic();
 		if(!validate(feedId, justPostedMusic)) {
 			return null;
 		}
 		List<FeedPost> feedPosts = new ArrayList<FeedPost>();
-		ByteString feedContent;
+
+		Feed feed;
 		try {
-			feedContent = db.get(feedId);
-			if(feedContent != null) {
-				try {
-					Feed feed = Feed.parseFrom(feedContent);
-					for(int i = 0; i < feed.getTopicIdsCount(); i++) {
-						Topic topic = this.getTopic(feed.getTopicIds(i));
-						if(topic != null) {
-							MusicPost musicPost = this.getMusicPost(topic.getPostIds(0));
-							if(musicPost != null) {
-								processMusicPost(musicPost, feedPosts);
-							}
-						}
+			feed = this.getFeedObject(feedId);
+			for(int i = 0; i < feed.getTopicIdsCount(); i++) {
+				Topic topic = this.getTopic(feed.getTopicIds(i));
+				if(topic != null) {
+					MusicPost musicPost = this.getMusicPost(topic.getPostIds(0));
+					if(musicPost != null) {
+						processMusicPost(musicPost, feedPosts);
 					}
-				} catch (InvalidProtocolBufferException e) {
-					// do nothing
 				}
 			}
-		} catch (DatabaseException e1) {
+		} catch (NoFeedException e) {
 			// do nothing
 		}
-
-
+		
 		if(justPostedMusic != null) {
 			PostMusicJob postJob = postMusicJobFactory.create(justPostedMusic);
 			jobService.launchJob(postJob);
@@ -80,6 +107,24 @@ public class FeedService {
 		}
 
 		return feedPosts;
+	}
+
+	public Feed getFeedObject(String feedId) throws NoFeedException {
+		if(PUBLIC_GLOBAL_FEED.equals(feedId)) {
+			this.initPublicFeedIfNecessary();
+		}
+		
+		try {
+			ByteString feedContent = db.get(feedId);
+			if(feedContent != null) {
+				return Feed.parseFrom(feedContent);
+			}
+			throw new NoFeedException();
+		} catch (DatabaseException e1) {
+			throw new NoFeedException(e1);
+		} catch (InvalidProtocolBufferException e) {
+			throw new NoFeedException(e);
+		}
 	}
 
 	private void processMusicPost(MusicPost musicPost, List<FeedPost> feedPosts) {

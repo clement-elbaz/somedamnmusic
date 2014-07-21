@@ -37,7 +37,7 @@ public class TokenPage {
 				
 				User user = userService.getUserFromEmail(email);
 				
-				session.setUser(user);
+				session.setUserId(user.getUserId());
 				db.remove(token);
 			}
 		} catch (DatabaseException e1) {
