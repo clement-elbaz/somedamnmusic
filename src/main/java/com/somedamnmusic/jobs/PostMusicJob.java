@@ -41,7 +41,8 @@ public class PostMusicJob implements Runnable {
 			
 			Topic topic = this.createNewTopic();
 			
-			jobService.launchJob(postMusicOnFeedJobFactory.create(currentUser.getWhatIPostFeedId(), topic));
+			PostMusicOnFeedJob job = postMusicOnFeedJobFactory.create(currentUser.getWhatIPostFeedId(), topic);
+			jobService.launchJob(job);
 			jobService.launchJob(postMusicOnFeedJobFactory.create(currentUser.getWhatIFollowFeedId(), topic));
 			jobService.launchJob(postMusicOnFeedJobFactory.create(FeedService.PUBLIC_GLOBAL_FEED, topic));
 			

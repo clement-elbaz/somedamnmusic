@@ -22,7 +22,7 @@ public class UpdateUserJob implements Runnable {
 		try {
 			userService.storeUser(user);
 		} catch (DatabaseException e) {
-			// TODO log
+			e.printStackTrace(); // TODO log
 		}
 	}
 	
