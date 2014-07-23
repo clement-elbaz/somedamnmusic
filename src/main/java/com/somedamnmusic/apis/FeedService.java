@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.somedamnmusic.apis.exception.DatabaseException;
@@ -26,15 +27,15 @@ public class FeedService {
 
 	private final DatabaseService db;
 	private final UserService userService;
-	private final Session session;
+	private final Provider<Session> sessionProvider;
 	private final JobService jobService;
 	private final PostMusicJobFactory postMusicJobFactory;
 
 	@Inject
-	public FeedService(DatabaseService db, UserService userService, Session session, JobService jobService, PostMusicJobFactory postMusicJobFactory) {
+	public FeedService(DatabaseService db, UserService userService, Provider<Session> sessionProvider, JobService jobService, PostMusicJobFactory postMusicJobFactory) {
 		this.db = db;
 		this.userService = userService;
-		this.session = session;
+		this.sessionProvider= sessionProvider;
 		this.jobService = jobService;
 		this.postMusicJobFactory = postMusicJobFactory;
 	}
@@ -78,7 +79,7 @@ public class FeedService {
 			this.initPublicFeedIfNecessary();
 		}
 		
-		MusicPost justPostedMusic = session.getJustPostedMusic();
+		MusicPost justPostedMusic = sessionProvider.get().getJustPostedMusic();
 		if(!validate(feedId, justPostedMusic)) {
 			return null;
 		}
