@@ -6,6 +6,7 @@ import com.google.protobuf.ByteString;
 import com.somedamnmusic.apis.DatabaseService;
 import com.somedamnmusic.apis.MailService;
 import com.somedamnmusic.apis.exception.DatabaseException;
+import com.somedamnmusic.mail.UnexplainableEmailServiceException;
 
 public class LoginJob implements Runnable {
 	
@@ -25,8 +26,10 @@ public class LoginJob implements Runnable {
 		try {
 			token = databaseService.getRandomkey();
 			databaseService.set(token, ByteString.copyFromUtf8(email));
-			mailService.sendLoginEmail(token);
+			mailService.sendLoginEmail(email, token);
 		} catch (DatabaseException e) {
+			e.printStackTrace(); // TODO log
+		} catch (UnexplainableEmailServiceException e) {
 			e.printStackTrace(); // TODO log
 		}
 	}

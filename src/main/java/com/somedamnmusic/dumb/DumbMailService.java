@@ -4,8 +4,8 @@ import com.somedamnmusic.apis.MailService;
 
 public class DumbMailService implements MailService {
 
-	public void sendLoginEmail(String token) {
-		System.out.println("You've got some mail : http://localhost:8080/token/"+token);
+	public void sendLoginEmail(String email, String token) {
+		System.out.println(email+" : You've got some mail : http://localhost:8080/token/"+token);
 
 	}
 
