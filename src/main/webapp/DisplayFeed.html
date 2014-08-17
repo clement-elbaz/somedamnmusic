@@ -1,5 +1,8 @@
 <html>
     <body>
+    	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<script type="text/javascript" src="/js/lazyYT.js"></script>
+		<link rel="stylesheet" href="css/lazyYT.css">
 		<ul class="list-group" style="width:650px;">
 			@Repeat(items=feedPosts, var="post")
 			<li class="list-group-item">
@@ -11,7 +14,7 @@
 				  </div>
 				  <a class="pull-left" href="#">
 					@ShowIf(post.isYoutube)
-					<iframe width="600" height="100" src="//www.youtube.com/embed/${post.youtubeId}" frameborder="0" allowfullscreen></iframe>
+					<div class="js-lazyYT" data-youtube-id="${post.youtubeId}" data-width="600" data-height="100"></div>
 				  </a>
 				</div>
 			</li>
@@ -19,5 +22,9 @@
 		
 		@ShowIf(feedPosts.empty)
 		<p>No music... yet !</p>
+		
+		<script>
+            $('.js-lazyYT').lazyYT();
+        </script>
 	</body>
 </html>
