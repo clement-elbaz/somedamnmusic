@@ -1,10 +1,5 @@
 package com.somedamnmusic.mail;
 
-import java.util.Arrays;
-
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
 
@@ -27,23 +22,21 @@ public class MailServiceImpl implements MailService {
 		try {
 			SimpleEmail simpleEmail = new SimpleEmail();
 			
-			simpleEmail.setSubject("somedamnmusic.com - login");
-			simpleEmail.setMsg("Hello, <br/><br/>Use this link to log in somedamnmusic.com : http://somedamnmusic.com/token/"+token);
-			
 			simpleEmail.setAuthentication(emailUserName, emailPassword);
 			
 			simpleEmail.setHostName("smtp.somedamnmusic.com");
 			simpleEmail.setFrom("noreply@somedamnmusic.com");
+			simpleEmail.setSSLOnConnect(true);
 			
-			simpleEmail.setTo(Arrays.asList(new InternetAddress(email)));
+			
+			simpleEmail.setSubject("somedamnmusic.com - login");
+			simpleEmail.setMsg("Hello,\r\n\r\nUse this URL to log in SDM : http://somedamnmusic.com/token/"+token);
+			simpleEmail.addTo(email);
 			
 			simpleEmail.send();
 		} catch(EmailException e) {
 			throw new UnexplainableEmailServiceException(e);
-		} catch (AddressException e) {
-			throw new UnexplainableEmailServiceException(e);
 		}
-		
 	}
 
 }
