@@ -10,6 +10,7 @@ import com.google.inject.servlet.SessionScoped;
 import com.google.sitebricks.SitebricksModule;
 import com.somedamnmusic.apis.DatabaseService;
 import com.somedamnmusic.apis.MailService;
+import com.somedamnmusic.database.redis.RedisDatabaseService;
 import com.somedamnmusic.dumb.DumbDatabase;
 import com.somedamnmusic.jobs.JobService;
 import com.somedamnmusic.jobs.LoginJob;
@@ -58,7 +59,11 @@ public class AppConfig extends com.google.inject.servlet.GuiceServletContextList
 			                bind(String.class).annotatedWith(Names.named("email.password")).toInstance(System.getenv("SDM_EMAIL_PASSWORD"));
 			                
 			                
-			                bind(DatabaseService.class).to(DumbDatabase.class);
+			                bind(DatabaseService.class).to(RedisDatabaseService.class);
+			                bind(String.class).annotatedWith(Names.named("database.host")).toInstance(System.getenv("SDM_DB_HOST"));
+			                bind(Integer.class).annotatedWith(Names.named("database.port")).toInstance(Integer.parseInt(System.getenv("SDM_DB_PORT")));
+			                bind(String.class).annotatedWith(Names.named("database.client")).toInstance(System.getenv("SDM_DB_CLIENT"));
+			                bind(String.class).annotatedWith(Names.named("database.password")).toInstance(System.getenv("SDM_DB_PASSWORD"));
 			                
 			                bind(JobService.class).to(SimpleJobService.class);
 			            }

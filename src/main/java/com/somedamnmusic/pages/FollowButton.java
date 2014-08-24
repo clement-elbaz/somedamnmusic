@@ -13,6 +13,7 @@ import com.somedamnmusic.session.Session;
 @EmbedAs("FollowButton")
 public class FollowButton {
 	private User currentUser;
+	private String justFollowedUserId;
 	private String followedUserId;
 	private String returnURL;
 	
@@ -20,6 +21,9 @@ public class FollowButton {
 	public FollowButton(Session session, UserService userService) {
 		try {
 			this.currentUser = userService.getUserFromId(session.getUserId());
+			if(session.getJustFollowedUser() != null) {
+				this.justFollowedUserId = session.getJustFollowedUser().getUserId();
+			}
 		} catch (NoUserException e) {
 			// TODO log
 			e.printStackTrace();
@@ -40,7 +44,8 @@ public class FollowButton {
 		return StringUtils.isNotBlank(followedUserId) && 
 				currentUser != null
 				&& !currentUser.getUserId().equals(followedUserId)
-				&& !currentUser.getFollowingsList().contains(followedUserId);
+				&& !currentUser.getFollowingsList().contains(followedUserId)
+				&& !followedUserId.equals(this.justFollowedUserId);
 	}
 	
 	public String getReturnURL() {

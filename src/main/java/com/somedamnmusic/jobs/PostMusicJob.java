@@ -62,7 +62,7 @@ public class PostMusicJob implements Runnable {
 
 	private Topic createNewTopic() throws UnexplainableDatabaseServiceException {
 		Topic.Builder newTopic = Topic.newBuilder();
-		newTopic.setId(db.getRandomkey());
+		newTopic.setId(db.getAvailablekey());
 		newTopic.addPostIds(musicPost.getId());
 		
 		Topic topic = newTopic.build();

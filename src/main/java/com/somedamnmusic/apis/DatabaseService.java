@@ -30,9 +30,9 @@ public interface DatabaseService {
 	void set (String key, ByteString content) throws UnexplainableDatabaseServiceException;
 	
 	/**
-	 * Get a brand new random key.
+	 * Get a brand new random available key.
 	 * @return
 	 */
-	String getRandomkey() throws UnexplainableDatabaseServiceException;
+	String getAvailablekey() throws UnexplainableDatabaseServiceException;
 
 }

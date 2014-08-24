@@ -2,6 +2,8 @@ package com.somedamnmusic.pages;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.google.sitebricks.At;
@@ -35,7 +37,9 @@ public class ProfilePage {
 		this.session = session;
 
 		try {
-			this.currentUser = userService.getUserFromId(session.getUserId());
+			if(StringUtils.isNotBlank(session.getUserId())) {
+				this.currentUser = userService.getUserFromId(session.getUserId());
+			}
 		} catch (NoUserException e) {
 			// TODO log
 			e.printStackTrace();

@@ -36,7 +36,7 @@ public class DumbDatabase implements DatabaseService {
 
 	}
 
-	public String getRandomkey() {
+	public String getAvailablekey() {
 		count++;
 		return "key_"+count;
 	}

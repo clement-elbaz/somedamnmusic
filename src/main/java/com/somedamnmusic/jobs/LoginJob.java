@@ -24,7 +24,7 @@ public class LoginJob implements Runnable {
 	public void run() {
 		String token;
 		try {
-			token = databaseService.getRandomkey();
+			token = databaseService.getAvailablekey();
 			databaseService.set(token, ByteString.copyFromUtf8(email));
 			mailService.sendLoginEmail(email, token);
 		} catch (UnexplainableEmailServiceException e) {

@@ -47,7 +47,7 @@ public class SignupComplete {
 
 			User.Builder newUser = User.newBuilder();
 
-			newUser.setUserId(db.getRandomkey());
+			newUser.setUserId(db.getAvailablekey());
 			newUser.setEmail(email);
 			newUser.setFirstName(firstname);
 			newUser.setLastName(lastname);

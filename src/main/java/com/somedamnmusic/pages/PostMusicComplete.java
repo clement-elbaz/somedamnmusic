@@ -65,7 +65,7 @@ public class PostMusicComplete {
 
 			MusicPost.Builder newPost = MusicPost.newBuilder();
 
-			newPost.setId(db.getRandomkey());
+			newPost.setId(db.getAvailablekey());
 			newPost.setPosterId(currentUser.getUserId());
 			newPost.setDescription(description);
 			newPost.setYoutubeId(youtubeId);

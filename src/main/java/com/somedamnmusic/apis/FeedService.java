@@ -63,7 +63,7 @@ public class FeedService {
 	public String createFeed() throws UnexplainableFeedServiceException {
 		try {
 			Feed.Builder feed = Feed.newBuilder();
-			feed.setId(db.getRandomkey());
+			feed.setId(db.getAvailablekey());
 
 			Feed feedComplete = feed.build();
 
