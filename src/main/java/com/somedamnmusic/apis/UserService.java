@@ -3,8 +3,10 @@ package com.somedamnmusic.apis;
 import com.google.inject.Inject;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.somedamnmusic.apis.exception.DatabaseException;
+import com.somedamnmusic.apis.exception.NoResultException;
 import com.somedamnmusic.apis.exception.NoUserException;
+import com.somedamnmusic.apis.exception.UnexplainableUserServiceException;
+import com.somedamnmusic.database.UnexplainableDatabaseServiceException;
 import com.somedamnmusic.entities.Entities.User;
 
 public class UserService {
@@ -20,20 +22,18 @@ public class UserService {
 	 * @param id
 	 * @return
 	 * @throws NoUserException
+	 * @throws UnexplainableUserServiceException 
 	 */
-	public User getUserFromId(String id) throws NoUserException {
-		ByteString content;
+	public User getUserFromId(String id) throws NoUserException, UnexplainableUserServiceException {
 		try {
-			content = db.get(id);
-			if(content != null) {
-				return User.parseFrom(content);
-			} else {
-				throw new NoUserException();
-			}
-		} catch (DatabaseException e) {
+			ByteString content = db.get(id);
+			return User.parseFrom(content);
+		} catch (NoResultException e) {
 			throw new NoUserException(e);
+		} catch (UnexplainableDatabaseServiceException e) {
+			throw new UnexplainableUserServiceException(e);
 		} catch (InvalidProtocolBufferException e) {
-			throw new NoUserException(e);
+			throw new UnexplainableUserServiceException(e);
 		}
 		
 	}
@@ -45,15 +45,14 @@ public class UserService {
 	 * @return
 	 * @throws NoUserException
 	 */
-	public User getUserFromEmail(String email) throws NoUserException {
+	public User getUserFromEmail(String email) throws NoUserException, UnexplainableUserServiceException {
 		try {
 			ByteString id = db.get(email);
-			if(id != null) {
-				return this.getUserFromId(id.toStringUtf8());
-			}
-			throw new NoUserException();
-		} catch (DatabaseException e) {
+			return this.getUserFromId(id.toStringUtf8());
+		} catch (NoResultException e) {
 			throw new NoUserException(e);
+		} catch (UnexplainableDatabaseServiceException e) {
+			throw new UnexplainableUserServiceException(e);
 		}
 	}
 	
@@ -63,9 +62,14 @@ public class UserService {
 	 * @param user
 	 * @throws DatabaseException
 	 */
-	public void storeUser(User user) throws DatabaseException {
-		db.set(user.getUserId(), user.toByteString());
-		db.set(user.getEmail(), ByteString.copyFromUtf8(user.getUserId()));
+	public void storeUser(User user) throws UnexplainableUserServiceException {
+		try {
+			db.set(user.getUserId(), user.toByteString());
+			db.set(user.getEmail(), ByteString.copyFromUtf8(user.getUserId()));
+		} catch (UnexplainableDatabaseServiceException e) {
+			throw new UnexplainableUserServiceException(e);
+		}
+		
 	}
 
 }

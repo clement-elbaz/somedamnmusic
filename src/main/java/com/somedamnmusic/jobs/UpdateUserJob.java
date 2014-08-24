@@ -3,7 +3,7 @@ package com.somedamnmusic.jobs;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.somedamnmusic.apis.UserService;
-import com.somedamnmusic.apis.exception.DatabaseException;
+import com.somedamnmusic.apis.exception.UnexplainableUserServiceException;
 import com.somedamnmusic.entities.Entities.User;
 
 public class UpdateUserJob implements Runnable {
@@ -21,7 +21,7 @@ public class UpdateUserJob implements Runnable {
 	public void run() {
 		try {
 			userService.storeUser(user);
-		} catch (DatabaseException e) {
+		} catch (UnexplainableUserServiceException e) {
 			e.printStackTrace(); // TODO log
 		}
 	}

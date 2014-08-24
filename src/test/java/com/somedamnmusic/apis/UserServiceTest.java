@@ -7,8 +7,8 @@ import org.junit.Test;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.somedamnmusic.apis.exception.DatabaseException;
 import com.somedamnmusic.apis.exception.NoUserException;
+import com.somedamnmusic.apis.exception.UnexplainableUserServiceException;
 import com.somedamnmusic.dumb.DumbDatabase;
 import com.somedamnmusic.entities.Entities.User;
 
@@ -37,7 +37,7 @@ public class UserServiceTest {
 		
 		try {
 			userService.storeUser(user);
-		} catch (DatabaseException e) {
+		} catch (UnexplainableUserServiceException e) {
 			Assert.fail(e.toString());
 		}
 		
@@ -51,6 +51,8 @@ public class UserServiceTest {
 			
 			Assert.assertEquals(user, userRetrieved2);
 		} catch (NoUserException e) {
+			Assert.fail(e.toString());
+		} catch (UnexplainableUserServiceException e) {
 			Assert.fail(e.toString());
 		}
 		

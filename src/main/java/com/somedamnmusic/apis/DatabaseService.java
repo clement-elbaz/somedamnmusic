@@ -1,7 +1,8 @@
 package com.somedamnmusic.apis;
 
 import com.google.protobuf.ByteString;
-import com.somedamnmusic.apis.exception.DatabaseException;
+import com.somedamnmusic.apis.exception.NoResultException;
+import com.somedamnmusic.database.UnexplainableDatabaseServiceException;
 
 public interface DatabaseService {
 	
@@ -11,14 +12,14 @@ public interface DatabaseService {
 	 * @param key
 	 * @return
 	 */
-	ByteString get(String key) throws DatabaseException;
+	ByteString get(String key) throws NoResultException, UnexplainableDatabaseServiceException;
 	
 	/**
 	 * Remove data.
 	 * 
 	 * @param key
 	 */
-	void remove(String key) throws DatabaseException;
+	void remove(String key) throws UnexplainableDatabaseServiceException;
 	
 	/**
 	 * Set some data.
@@ -26,12 +27,12 @@ public interface DatabaseService {
 	 * @param key
 	 * @param content
 	 */
-	void set (String key, ByteString content) throws DatabaseException;
+	void set (String key, ByteString content) throws UnexplainableDatabaseServiceException;
 	
 	/**
 	 * Get a brand new random key.
 	 * @return
 	 */
-	String getRandomkey() throws DatabaseException;
+	String getRandomkey() throws UnexplainableDatabaseServiceException;
 
 }

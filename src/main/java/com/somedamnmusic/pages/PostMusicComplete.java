@@ -10,8 +10,9 @@ import com.google.sitebricks.At;
 import com.google.sitebricks.http.Post;
 import com.somedamnmusic.apis.DatabaseService;
 import com.somedamnmusic.apis.UserService;
-import com.somedamnmusic.apis.exception.DatabaseException;
 import com.somedamnmusic.apis.exception.NoUserException;
+import com.somedamnmusic.apis.exception.UnexplainableUserServiceException;
+import com.somedamnmusic.database.UnexplainableDatabaseServiceException;
 import com.somedamnmusic.entities.Entities.MusicPost;
 import com.somedamnmusic.entities.Entities.User;
 import com.somedamnmusic.session.Session;
@@ -20,13 +21,13 @@ import com.somedamnmusic.session.Session;
 public class PostMusicComplete {
 	private final DatabaseService db;
 	private final Session session;
-	
+
 	private User currentUser;
 	private String youtubeURL;
-	
+
 	private String description;
 	private String returnURL;
-	
+
 	@Inject
 	public PostMusicComplete(Session session, UserService userService, DatabaseService db) {
 		this.session = session;
@@ -34,70 +35,74 @@ public class PostMusicComplete {
 			this.currentUser = userService.getUserFromId(session.getUserId());
 		} catch (NoUserException e) {
 			// TODO log
+			e.printStackTrace();
+		} catch (UnexplainableUserServiceException e) {
+			// TODO log
+			e.printStackTrace();
 		}
 		this.db = db;
 	}
-	
+
 	@Post
 	public String post() {
 		if(validate()) {
 			if(StringUtils.isNotBlank(youtubeURL)) {
 				try {
 					processYoutube();
-				} catch (DatabaseException e) {
+				} catch (UnexplainableDatabaseServiceException e) {
 					e.printStackTrace(); // TODO log
 				}
 			}
-			
+
 		}
-		
+
 		return returnURL;
 	}
-	
-	private void processYoutube() throws DatabaseException {
+
+	private void processYoutube() throws UnexplainableDatabaseServiceException {
 		try {
 			String youtubeId = parseYoutubeURL(youtubeURL);
-			
+
 			MusicPost.Builder newPost = MusicPost.newBuilder();
-			
+
 			newPost.setId(db.getRandomkey());
 			newPost.setPosterId(currentUser.getUserId());
 			newPost.setDescription(description);
 			newPost.setYoutubeId(youtubeId);
-			
+
 			MusicPost newPostCompleted = newPost.build();
-			
+
 			session.setJustPostedMusic(newPostCompleted);
 		} catch (ParseException e) {
 			// TODO warn user
 			e.printStackTrace(); // TODO log
 		}
 	}
-	
+
 	private String parseYoutubeURL(String youtubeFullURL) throws ParseException {
 		if(StringUtils.isBlank(youtubeFullURL)) {
 			throw new ParseException(youtubeFullURL, 0);
 		}
-		
+
 		if(!youtubeFullURL.toLowerCase().contains("v=")) {
 			throw new ParseException(youtubeFullURL, 0);
 		}
-		
+
 		final int idIndex = youtubeFullURL.toLowerCase().indexOf("v=") + 2;
-		
+
 		String youtubeEndURL;
 		try {
 			youtubeEndURL = youtubeFullURL.substring(idIndex);
 		} catch(IndexOutOfBoundsException e) {
 			throw new ParseException(youtubeFullURL, idIndex);
 		}
-		
+
 		if(!youtubeEndURL.contains(StringEscapeUtils.escapeHtml4("&"))) {
 			return youtubeEndURL;
 		}
-		
+
 		int endIndex = youtubeEndURL.indexOf(StringEscapeUtils.escapeHtml4("&"));
-		
+
 		try {
 			return youtubeEndURL.substring(0, endIndex);
 		} catch(IndexOutOfBoundsException e) {
@@ -107,9 +112,9 @@ public class PostMusicComplete {
 
 	private boolean validate() {
 		return StringUtils.isNotBlank(youtubeURL)
-				
+
 				&& StringUtils.isNotBlank(returnURL)
-				
+
 				&& currentUser != null;
 	}
 

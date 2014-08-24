@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import com.google.sitebricks.rendering.EmbedAs;
 import com.somedamnmusic.apis.UserService;
 import com.somedamnmusic.apis.exception.NoUserException;
+import com.somedamnmusic.apis.exception.UnexplainableUserServiceException;
 import com.somedamnmusic.entities.Entities.User;
 import com.somedamnmusic.session.Session;
 
@@ -21,6 +22,10 @@ public class FollowButton {
 			this.currentUser = userService.getUserFromId(session.getUserId());
 		} catch (NoUserException e) {
 			// TODO log
+			e.printStackTrace();
+		} catch (UnexplainableUserServiceException e) {
+			// TODO log
+			e.printStackTrace();
 		}
 	}
 	

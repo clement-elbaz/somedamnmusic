@@ -5,8 +5,9 @@ import com.google.inject.assistedinject.Assisted;
 import com.somedamnmusic.apis.DatabaseService;
 import com.somedamnmusic.apis.FeedService;
 import com.somedamnmusic.apis.UserService;
-import com.somedamnmusic.apis.exception.DatabaseException;
 import com.somedamnmusic.apis.exception.NoUserException;
+import com.somedamnmusic.apis.exception.UnexplainableUserServiceException;
+import com.somedamnmusic.database.UnexplainableDatabaseServiceException;
 import com.somedamnmusic.entities.Entities.MusicPost;
 import com.somedamnmusic.entities.Entities.Topic;
 import com.somedamnmusic.entities.Entities.User;
@@ -50,14 +51,16 @@ public class PostMusicJob implements Runnable {
 				User user = userService.getUserFromId(userId);
 				jobService.launchJob(postMusicOnFeedJobFactory.create(user.getWhatIFollowFeedId(), topic));
 			}
-		} catch (DatabaseException e) {
-			e.printStackTrace(); // TODO log
 		} catch (NoUserException e) {
+			e.printStackTrace(); // TODO log
+		} catch (UnexplainableDatabaseServiceException e) {
+			e.printStackTrace(); // TODO log
+		} catch (UnexplainableUserServiceException e) {
 			e.printStackTrace(); // TODO log
 		}
 	}
 
-	private Topic createNewTopic() throws DatabaseException {
+	private Topic createNewTopic() throws UnexplainableDatabaseServiceException {
 		Topic.Builder newTopic = Topic.newBuilder();
 		newTopic.setId(db.getRandomkey());
 		newTopic.addPostIds(musicPost.getId());

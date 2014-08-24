@@ -4,8 +4,9 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.somedamnmusic.apis.DatabaseService;
 import com.somedamnmusic.apis.FeedService;
-import com.somedamnmusic.apis.exception.DatabaseException;
 import com.somedamnmusic.apis.exception.NoFeedException;
+import com.somedamnmusic.apis.exception.UnexplainableFeedServiceException;
+import com.somedamnmusic.database.UnexplainableDatabaseServiceException;
 import com.somedamnmusic.entities.Entities.Feed;
 import com.somedamnmusic.entities.Entities.Topic;
 
@@ -35,9 +36,11 @@ public class PostMusicOnFeedJob implements Runnable {
 			db.set(feed.getId(), updatedFeed.build().toByteString());
 		} catch (NoFeedException e) {
 			e.printStackTrace(); // TODO log
-		} catch (DatabaseException e) {
+		} catch (UnexplainableFeedServiceException e) {
 			e.printStackTrace(); // TODO log
-		}
+		} catch (UnexplainableDatabaseServiceException e) {
+			e.printStackTrace(); // TODO log
+		} 
 	}
 	
 	public static interface PostMusicOnFeedJobFactory {

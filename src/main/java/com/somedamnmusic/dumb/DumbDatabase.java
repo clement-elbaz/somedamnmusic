@@ -8,7 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.inject.Singleton;
 import com.google.protobuf.ByteString;
 import com.somedamnmusic.apis.DatabaseService;
-import com.somedamnmusic.apis.exception.DatabaseException;
+import com.somedamnmusic.apis.exception.NoResultException;
+import com.somedamnmusic.database.UnexplainableDatabaseServiceException;
 
 @Singleton
 public class DumbDatabase implements DatabaseService {
@@ -16,16 +17,20 @@ public class DumbDatabase implements DatabaseService {
 	
 	private Map<String, ByteString> database = new HashMap<String, ByteString>();
 
-	public ByteString get(String key) throws DatabaseException {
+	public ByteString get(String key) throws NoResultException, UnexplainableDatabaseServiceException {
 		if(StringUtils.isBlank(key)) {
-			throw new DatabaseException();
+			throw new UnexplainableDatabaseServiceException();
 		}
-		return database.get(key);
+		ByteString result = database.get(key);
+		if(result == null) {
+			throw new NoResultException();
+		}
+		return result;
 	}
 
-	public void set(String key, ByteString content) throws DatabaseException {
+	public void set(String key, ByteString content) throws UnexplainableDatabaseServiceException {
 		if(StringUtils.isBlank(key) || content == null) {
-			throw new DatabaseException();
+			throw new UnexplainableDatabaseServiceException();
 		}
 		database.put(key, content);
 
@@ -36,9 +41,9 @@ public class DumbDatabase implements DatabaseService {
 		return "key_"+count;
 	}
 
-	public void remove(String key) throws DatabaseException {
+	public void remove(String key) throws UnexplainableDatabaseServiceException {
 		if(StringUtils.isBlank(key)) {
-			throw new DatabaseException();
+			throw new UnexplainableDatabaseServiceException();
 		}
 		database.remove(key);
 	}

@@ -10,8 +10,9 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.somedamnmusic.apis.exception.DatabaseException;
 import com.somedamnmusic.apis.exception.NoUserException;
+import com.somedamnmusic.apis.exception.UnexplainableFeedServiceException;
+import com.somedamnmusic.apis.exception.UnexplainableUserServiceException;
 import com.somedamnmusic.dumb.DumbDatabase;
 import com.somedamnmusic.entities.Entities.MusicPost;
 import com.somedamnmusic.entities.Entities.User;
@@ -67,7 +68,10 @@ public class FeedTest {
 			user = this.provideUser();
 			userService.storeUser(user);
 			session.setUserId(user.getUserId());
-		} catch (DatabaseException e) {
+		} catch (UnexplainableFeedServiceException e) {
+			Assert.fail(e.toString());
+			return;
+		} catch (UnexplainableUserServiceException e) {
 			Assert.fail(e.toString());
 			return;
 		}
@@ -83,15 +87,22 @@ public class FeedTest {
 			user = userService.getUserFromId(user.getUserId());
 		} catch (NoUserException e) {
 			Assert.fail(e.toString());
+		} catch (UnexplainableUserServiceException e) {
+			Assert.fail(e.toString());
 		}
 
-		List<FeedPost> feed = feedService.getFeed(user.getWhatIPostFeedId());
+		List<FeedPost> feed;
+		try {
+			feed = feedService.getFeed(user.getWhatIPostFeedId());
+			
+			Assert.assertNotNull(feed);
+			Assert.assertEquals(1, feed.size());
 
-		Assert.assertNotNull(feed);
-		Assert.assertEquals(1, feed.size());
-
-		Assert.assertEquals("00000000", feed.get(0).youtubeId);
-		Assert.assertTrue(feed.get(0).isYoutube);
+			Assert.assertEquals("00000000", feed.get(0).youtubeId);
+			Assert.assertTrue(feed.get(0).isYoutube);
+		} catch (UnexplainableFeedServiceException e) {
+			Assert.fail(e.toString());
+		}
 	}
 
 	private MusicPost provideMusicPost(User user) {
@@ -105,7 +116,7 @@ public class FeedTest {
 		return musicPost.build();
 	}
 
-	private User provideUser() throws DatabaseException {
+	private User provideUser() throws UnexplainableFeedServiceException {
 		User.Builder user = User.newBuilder();
 
 		user.setUserId("some_id");

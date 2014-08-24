@@ -10,7 +10,10 @@ import com.google.sitebricks.http.Post;
 import com.somedamnmusic.apis.DatabaseService;
 import com.somedamnmusic.apis.FeedService;
 import com.somedamnmusic.apis.UserService;
-import com.somedamnmusic.apis.exception.DatabaseException;
+import com.somedamnmusic.apis.exception.NoResultException;
+import com.somedamnmusic.apis.exception.UnexplainableFeedServiceException;
+import com.somedamnmusic.apis.exception.UnexplainableUserServiceException;
+import com.somedamnmusic.database.UnexplainableDatabaseServiceException;
 import com.somedamnmusic.entities.Entities.User;
 import com.somedamnmusic.session.Session;
 
@@ -20,11 +23,11 @@ public class SignupComplete {
 	private final UserService userService;
 	private final FeedService feedService;
 	private final Session session;
-	
+
 	private String token;
 	private String firstname;
 	private String lastname;
-	
+
 	@Inject
 	public SignupComplete(DatabaseService db, UserService userService, FeedService feedService, Session session) {
 		this.db = db;
@@ -32,7 +35,7 @@ public class SignupComplete {
 		this.feedService = feedService;
 		this.session = session;
 	}
-	
+
 	@Post
 	public String post() {
 		if(!validate()) {
@@ -40,41 +43,46 @@ public class SignupComplete {
 		}
 		try {
 			ByteString content = db.get(token);
-			
-			if(content != null) {
-				String email = content.toStringUtf8();
-				
-				User.Builder newUser = User.newBuilder();
-				
-				newUser.setUserId(db.getRandomkey());
-				newUser.setEmail(email);
-				newUser.setFirstName(firstname);
-				newUser.setLastName(lastname);
-				
-				newUser.setWhatIFollowFeedId(feedService.createFeed());
-				newUser.setWhatIPostFeedId(feedService.createFeed());
-				
-				User newUserCompleted = newUser.build();
-				
-				userService.storeUser(newUserCompleted);
-				session.setUserId(newUserCompleted.getUserId());
-				db.remove(token);
-				
-				return "/";
-			}
-		} catch (DatabaseException e) {
+			String email = content.toStringUtf8();
+
+			User.Builder newUser = User.newBuilder();
+
+			newUser.setUserId(db.getRandomkey());
+			newUser.setEmail(email);
+			newUser.setFirstName(firstname);
+			newUser.setLastName(lastname);
+
+			newUser.setWhatIFollowFeedId(feedService.createFeed());
+			newUser.setWhatIPostFeedId(feedService.createFeed());
+
+			User newUserCompleted = newUser.build();
+
+			userService.storeUser(newUserCompleted);
+			session.setUserId(newUserCompleted.getUserId());
+			db.remove(token);
+
+			return "/";
+
+		} catch (UnexplainableUserServiceException e) {
 			e.printStackTrace(); // TODO log
+			return "/signupcomplete";
+		} catch (UnexplainableDatabaseServiceException e) {
+			e.printStackTrace(); // TODO log
+			return "/signupcomplete";
+		}  catch (UnexplainableFeedServiceException e) {
+			e.printStackTrace(); // TODO log
+			return "/signupcomplete";
+		} catch (NoResultException e) {
+			return "http://you.little.hacker.com";
 		}
-		
-		return "/signupcomplete";
 	}
-	
+
 	private boolean validate() {
 		return StringUtils.isNotBlank(firstname)
 				&& StringUtils.isNotBlank(token);
 	}
-	
-	
+
+
 	public String getToken() {
 		return token;
 	}

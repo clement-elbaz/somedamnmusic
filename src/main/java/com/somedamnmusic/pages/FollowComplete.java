@@ -7,6 +7,7 @@ import com.google.sitebricks.At;
 import com.google.sitebricks.http.Post;
 import com.somedamnmusic.apis.UserService;
 import com.somedamnmusic.apis.exception.NoUserException;
+import com.somedamnmusic.apis.exception.UnexplainableUserServiceException;
 import com.somedamnmusic.entities.Entities.User;
 import com.somedamnmusic.session.Session;
 
@@ -27,6 +28,10 @@ public class FollowComplete {
 			this.currentUser = userService.getUserFromId(session.getUserId());
 		} catch (NoUserException e) {
 			// TODO log
+			e.printStackTrace();
+		} catch (UnexplainableUserServiceException e) {
+			// TODO log
+			e.printStackTrace();
 		}
 	}
 	
@@ -37,7 +42,11 @@ public class FollowComplete {
 				User followedUser = userService.getUserFromId(followedUserId);
 				session.setJustFollowedUser(followedUser);
 			} catch (NoUserException e) {
-				// do nothing
+				// TODO log
+				e.printStackTrace();
+			} catch (UnexplainableUserServiceException e) {
+				// TODO log
+				e.printStackTrace();
 			}
 		}
 		

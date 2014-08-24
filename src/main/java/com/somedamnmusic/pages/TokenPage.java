@@ -7,8 +7,10 @@ import com.google.sitebricks.At;
 import com.google.sitebricks.http.Get;
 import com.somedamnmusic.apis.DatabaseService;
 import com.somedamnmusic.apis.UserService;
-import com.somedamnmusic.apis.exception.DatabaseException;
+import com.somedamnmusic.apis.exception.NoResultException;
 import com.somedamnmusic.apis.exception.NoUserException;
+import com.somedamnmusic.apis.exception.UnexplainableUserServiceException;
+import com.somedamnmusic.database.UnexplainableDatabaseServiceException;
 import com.somedamnmusic.entities.Entities.User;
 import com.somedamnmusic.session.Session;
 
@@ -40,11 +42,15 @@ public class TokenPage {
 				session.setUserId(user.getUserId());
 				db.remove(token);
 			}
-		} catch (DatabaseException e1) {
+		} catch (UnexplainableDatabaseServiceException e1) {
 			e1.printStackTrace(); // TODO log
+		} catch (UnexplainableUserServiceException e) {
+			e.printStackTrace(); // TODO log
+		} catch (NoResultException e) {
+			e.printStackTrace(); // TODO log
 		} catch (NoUserException e) {
 			needSignup = true;
-		}
+		} 
 
 		if(!needSignup) {
 			return "/";

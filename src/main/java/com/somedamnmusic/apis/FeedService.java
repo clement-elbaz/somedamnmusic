@@ -9,9 +9,14 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.somedamnmusic.apis.exception.DatabaseException;
 import com.somedamnmusic.apis.exception.NoFeedException;
+import com.somedamnmusic.apis.exception.NoMusicPostException;
+import com.somedamnmusic.apis.exception.NoResultException;
+import com.somedamnmusic.apis.exception.NoTopicException;
 import com.somedamnmusic.apis.exception.NoUserException;
+import com.somedamnmusic.apis.exception.UnexplainableFeedServiceException;
+import com.somedamnmusic.apis.exception.UnexplainableUserServiceException;
+import com.somedamnmusic.database.UnexplainableDatabaseServiceException;
 import com.somedamnmusic.entities.Entities.Feed;
 import com.somedamnmusic.entities.Entities.MusicPost;
 import com.somedamnmusic.entities.Entities.Topic;
@@ -39,18 +44,15 @@ public class FeedService {
 		this.jobService = jobService;
 		this.postMusicJobFactory = postMusicJobFactory;
 	}
-	
-	private void initPublicFeedIfNecessary() {
+
+	private void initPublicFeedIfNecessary() throws UnexplainableDatabaseServiceException {
 		try {
-			if(db.get(PUBLIC_GLOBAL_FEED) == null) {
-				Feed.Builder publicFeed = Feed.newBuilder();
-				publicFeed.setId(PUBLIC_GLOBAL_FEED);
-				db.set(PUBLIC_GLOBAL_FEED, publicFeed.build().toByteString());
-			}
-		} catch (DatabaseException e) {
-			e.printStackTrace(); // TODO log
+			db.get(PUBLIC_GLOBAL_FEED);
+		} catch (NoResultException e) {
+			Feed.Builder publicFeed = Feed.newBuilder();
+			publicFeed.setId(PUBLIC_GLOBAL_FEED);
+			db.set(PUBLIC_GLOBAL_FEED, publicFeed.build().toByteString());
 		}
-		
 	}
 
 	/**
@@ -58,15 +60,19 @@ public class FeedService {
 	 * @return feedId
 	 * @throws DatabaseException 
 	 */
-	public String createFeed() throws DatabaseException {
-		Feed.Builder feed = Feed.newBuilder();
-		feed.setId(db.getRandomkey());
-		
-		Feed feedComplete = feed.build();
-		
-		db.set(feedComplete.getId(), feedComplete.toByteString());
-		
-		return feedComplete.getId();
+	public String createFeed() throws UnexplainableFeedServiceException {
+		try {
+			Feed.Builder feed = Feed.newBuilder();
+			feed.setId(db.getRandomkey());
+
+			Feed feedComplete = feed.build();
+
+			db.set(feedComplete.getId(), feedComplete.toByteString());
+
+			return feedComplete.getId();
+		} catch(UnexplainableDatabaseServiceException e) {
+			throw new UnexplainableFeedServiceException(e);
+		}
 	}
 
 	/**
@@ -74,61 +80,65 @@ public class FeedService {
 	 * @param feedId
 	 * @return
 	 */
-	public List<FeedPost> getFeed(String feedId) {
-		if(PUBLIC_GLOBAL_FEED.equals(feedId)) {
-			this.initPublicFeedIfNecessary();
-		}
-		
-		MusicPost justPostedMusic = sessionProvider.get().getJustPostedMusic();
-		if(!validate(feedId, justPostedMusic)) {
-			return null;
-		}
-		List<FeedPost> feedPosts = new ArrayList<FeedPost>();
-
-		Feed feed;
+	public List<FeedPost> getFeed(String feedId) throws UnexplainableFeedServiceException {
 		try {
-			feed = this.getFeedObject(feedId);
-			for(int i = 0; i < feed.getTopicIdsCount(); i++) {
-				Topic topic = this.getTopic(feed.getTopicIds(i));
-				if(topic != null) {
-					MusicPost musicPost = this.getMusicPost(topic.getPostIds(0));
-					if(musicPost != null) {
+			if(PUBLIC_GLOBAL_FEED.equals(feedId)) {
+				this.initPublicFeedIfNecessary();
+			}
+
+			MusicPost justPostedMusic = sessionProvider.get().getJustPostedMusic();
+			if(!validate(feedId, justPostedMusic)) {
+				throw new UnexplainableFeedServiceException();
+			}
+			List<FeedPost> feedPosts = new ArrayList<FeedPost>();
+
+			try {
+				Feed feed = this.getFeedObject(feedId);
+				for(int i = 0; i < feed.getTopicIdsCount(); i++) {
+					try {
+						Topic topic = this.getTopic(feed.getTopicIds(i));
+						MusicPost musicPost = this.getMusicPost(topic.getPostIds(0));
 						processMusicPost(musicPost, feedPosts);
+					} catch(NoTopicException e) {
+						// do nothing
+					} catch (NoMusicPostException e) {
+						// do nothing
 					}
 				}
+			} catch (NoFeedException e) {
+				// do nothing
 			}
-		} catch (NoFeedException e) {
-			// do nothing
-		}
-		
-		if(justPostedMusic != null) {
-			PostMusicJob postJob = postMusicJobFactory.create(justPostedMusic);
-			jobService.launchJob(postJob);
-			processMusicPost(justPostedMusic, feedPosts);
-		}
 
-		return feedPosts;
+			if(justPostedMusic != null) {
+				PostMusicJob postJob = postMusicJobFactory.create(justPostedMusic);
+				jobService.launchJob(postJob);
+				processMusicPost(justPostedMusic, feedPosts);
+			}
+
+			return feedPosts;
+		} catch(UnexplainableDatabaseServiceException e) {
+			throw new UnexplainableFeedServiceException(e);
+		}
 	}
 
-	public Feed getFeedObject(String feedId) throws NoFeedException {
-		if(PUBLIC_GLOBAL_FEED.equals(feedId)) {
-			this.initPublicFeedIfNecessary();
-		}
-		
+	public Feed getFeedObject(String feedId) throws UnexplainableFeedServiceException, NoFeedException {
 		try {
-			ByteString feedContent = db.get(feedId);
-			if(feedContent != null) {
-				return Feed.parseFrom(feedContent);
+			if(PUBLIC_GLOBAL_FEED.equals(feedId)) {
+				this.initPublicFeedIfNecessary();
 			}
-			throw new NoFeedException();
-		} catch (DatabaseException e1) {
-			throw new NoFeedException(e1);
-		} catch (InvalidProtocolBufferException e) {
+
+			ByteString feedContent = db.get(feedId);
+			return Feed.parseFrom(feedContent);
+		} catch (NoResultException e) {
 			throw new NoFeedException(e);
+		} catch (InvalidProtocolBufferException e) {
+			throw new UnexplainableFeedServiceException(e);
+		} catch(UnexplainableDatabaseServiceException e) {
+			throw new UnexplainableFeedServiceException(e);
 		}
 	}
 
-	private void processMusicPost(MusicPost musicPost, List<FeedPost> feedPosts) {
+	private void processMusicPost(MusicPost musicPost, List<FeedPost> feedPosts) throws UnexplainableFeedServiceException {
 		try {
 			User posterUser = userService.getUserFromId(musicPost.getPosterId());
 
@@ -143,38 +153,37 @@ public class FeedService {
 
 			feedPosts.add(feedPost);
 		} catch (NoUserException e) {
-			// do nothing
+			throw new UnexplainableFeedServiceException(e);
+		} catch (UnexplainableUserServiceException e) {
+			throw new UnexplainableFeedServiceException(e);
 		}
 	}
 
-	private Topic getTopic(String topicId) {
+	private Topic getTopic(String topicId) throws UnexplainableFeedServiceException, NoTopicException {
 		ByteString content;
 		try {
 			content = db.get(topicId);
-			if(content != null) {
-				return Topic.parseFrom(content);
-			}
-		} catch (DatabaseException e1) {
-			// do nothing
+			return Topic.parseFrom(content);
+		} catch (UnexplainableDatabaseServiceException e1) {
+			throw new UnexplainableFeedServiceException(e1);
 		} catch (InvalidProtocolBufferException e) {
-			// do nothing
+			throw new UnexplainableFeedServiceException(e);
+		} catch (NoResultException e) {
+			throw new NoTopicException(e);
 		}
-
-		return null;
 	}
 
-	private MusicPost getMusicPost(String postId) {
+	private MusicPost getMusicPost(String postId) throws UnexplainableFeedServiceException, NoMusicPostException {
 		try {
 			ByteString content = db.get(postId);
-			if(content != null) {
-				return MusicPost.parseFrom(content);
-			}
+			return MusicPost.parseFrom(content);
 		} catch (InvalidProtocolBufferException e) {
-			// do nothing
-		} catch (DatabaseException e) {
-			// do nothing
+			throw new UnexplainableFeedServiceException(e);
+		} catch (UnexplainableDatabaseServiceException e) {
+			throw new UnexplainableFeedServiceException(e);
+		} catch (NoResultException e) {
+			throw new NoMusicPostException(e);
 		}
-		return null;
 	}
 
 	private boolean validate(String feedId, MusicPost justPostedMusic) {

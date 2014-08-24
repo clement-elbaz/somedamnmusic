@@ -10,15 +10,16 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import com.somedamnmusic.apis.exception.DatabaseException;
 import com.somedamnmusic.apis.exception.NoUserException;
+import com.somedamnmusic.apis.exception.UnexplainableFeedServiceException;
+import com.somedamnmusic.apis.exception.UnexplainableUserServiceException;
 import com.somedamnmusic.dumb.DumbDatabase;
 import com.somedamnmusic.entities.Entities.MusicPost;
 import com.somedamnmusic.entities.Entities.User;
 import com.somedamnmusic.jobs.JobService;
 import com.somedamnmusic.jobs.PostMusicJob;
-import com.somedamnmusic.jobs.PostMusicOnFeedJob;
 import com.somedamnmusic.jobs.PostMusicJob.PostMusicJobFactory;
+import com.somedamnmusic.jobs.PostMusicOnFeedJob;
 import com.somedamnmusic.jobs.PostMusicOnFeedJob.PostMusicOnFeedJobFactory;
 import com.somedamnmusic.jobs.UpdateUserJob;
 import com.somedamnmusic.jobs.UpdateUserJob.UpdateUserJobFactory;
@@ -76,7 +77,7 @@ public class FollowServiceTest {
 		try {
 			user = this.provideUser1();
 			user2 = this.provideUser2();
-		} catch (DatabaseException e1) {
+		} catch (UnexplainableFeedServiceException e1) {
 			Assert.fail(e1.toString());
 			return;
 		}
@@ -93,11 +94,15 @@ public class FollowServiceTest {
 			Assert.assertTrue(updatedUser1.getFollowingsList().contains(user2.getUserId()));
 		} catch (NoUserException e) {
 			Assert.fail(e.toString());
+		} catch (UnexplainableUserServiceException e) {
+			Assert.fail(e.toString());
 		}
 		try {
 			User updatedUser2 = userService.getUserFromId(user2.getUserId());
 			Assert.assertTrue(updatedUser2.getFollowersList().contains(user.getUserId()));
 		} catch (NoUserException e) {
+			Assert.fail(e.toString());
+		} catch (UnexplainableUserServiceException e) {
 			Assert.fail(e.toString());
 		}
 		
@@ -117,11 +122,15 @@ public class FollowServiceTest {
 			
 		} catch (NoUserException e) {
 			Assert.fail(e.toString());
+		} catch (UnexplainableUserServiceException e) {
+			Assert.fail(e.toString());
+		} catch (UnexplainableFeedServiceException e) {
+			Assert.fail(e.toString());
 		}
 		
 	}
 
-	private User provideUser2() throws DatabaseException {
+	private User provideUser2() throws UnexplainableFeedServiceException {
 		User.Builder user = User.newBuilder();
 		user.setUserId("id_2");
 		user.setEmail("luke@skywalker.net");
@@ -133,7 +142,7 @@ public class FollowServiceTest {
 		return user.build();
 	}
 
-	private User provideUser1() throws DatabaseException {
+	private User provideUser1() throws UnexplainableFeedServiceException {
 		User.Builder user = User.newBuilder();
 		user.setUserId("id_1");
 		user.setEmail("bob@morane.com");

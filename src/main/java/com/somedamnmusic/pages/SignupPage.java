@@ -6,7 +6,8 @@ import com.google.protobuf.ByteString;
 import com.google.sitebricks.At;
 import com.google.sitebricks.http.Get;
 import com.somedamnmusic.apis.DatabaseService;
-import com.somedamnmusic.apis.exception.DatabaseException;
+import com.somedamnmusic.apis.exception.NoResultException;
+import com.somedamnmusic.database.UnexplainableDatabaseServiceException;
 
 @At("/signup/:token")
 public class SignupPage {
@@ -29,14 +30,11 @@ public class SignupPage {
 		
 		try {
 			ByteString content = db.get(token);
-			
-			if(content == null) {
-				authentOK = false;
-			} else {
-				this.email = content.toStringUtf8();
-			}
-		} catch (DatabaseException e) {
+			this.email = content.toStringUtf8();
+		} catch (UnexplainableDatabaseServiceException e) {
 			e.printStackTrace(); // TODO log
+		} catch (NoResultException e) {
+			authentOK = false;
 		}
 	}
 
