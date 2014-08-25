@@ -94,7 +94,7 @@ public class RedisDatabaseService implements DatabaseService {
 	@Override
 	public String getAvailablekey() throws UnexplainableDatabaseServiceException {
 		while(true) {
-			String result = RandomStringUtils.randomAlphanumeric(64);
+			String result = RandomStringUtils.randomAlphanumeric(12);
 			try {
 				this.get(result);
 			} catch (NoResultException e) {
