@@ -28,11 +28,8 @@ public class PostMusicOnFeedJob implements Runnable {
 	public void run() {
 		try {
 			Feed feed = feedService.getFeedObject(feedId);
-			
 			Feed.Builder updatedFeed = feed.toBuilder();
-
 			updatedFeed.addTopicIds(topic.getId());
-
 			db.set(feed.getId(), updatedFeed.build().toByteString());
 		} catch (NoFeedException e) {
 			e.printStackTrace(); // TODO log
