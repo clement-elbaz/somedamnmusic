@@ -46,9 +46,10 @@
 			@ShowIf(!logged)
 			<li><a  data-toggle="modal" style="cursor:pointer;" data-target="#signinModal">Sign in</a></li>
 			@ShowIf(logged)
-			<li><a href="/profile/${user.userId}">My profile</a>
+			<li><a href="/profile/${user.userId}">My profile</a></li>
 			@ShowIf(logged)
-			<li><a href="/signout">Log out</a>
+			<li><a href="/signout">Log out</a></li>
+			<li><a href="/all">All</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -66,9 +67,9 @@
       </ol>
       <div class="carousel-inner">
         <div class="item active">
-          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="First slide">
+          <img style="display: block; max-width:1280px; max-height:853px; width: auto; height: auto;" src="imgs/front1.jpg" alt="First slide">
           <div class="container">
-            <div class="carousel-caption">
+            <div style="text-align:left; color:#FFFFFF; text-shadow: 4px 4px 4px #000000;" class="carousel-caption">
 				<h1>Hello there.</h1>
 				<p class="lead">SDM is a social website that let you do only one thing : post <strong>some damn music.</strong>
 				<br/>Dude. It's that easy. 
@@ -81,11 +82,14 @@
           </div>
         </div>
         <div class="item">
-          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAGZmZgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" alt="Second slide">
+          <img style="display: block; max-width:1280px; max-height:853px; width: auto; height: auto;" src="imgs/front2.jpg" alt="Second slide">
           <div class="container">
-            <div class="carousel-caption">
-              <h1>What's going on right now</h1>
-              @DisplayFeed(feedPosts=publicFeed)<ul/>
+            <div style="text-align:right; color:#DDDDDD; text-shadow: 4px 4px 4px #000000;"  class="carousel-caption">
+              <h1>They're talking about it !</h1>
+              <br/>
+              <p><i>Don't you have better things to do ? -- my girlfriend</i></p>
+              <p><i>It sucks. -- my best friend</i></p>
+              <p><i>You damn nerd. -- some other friend</i></p>
             </div>
           </div>
         </div>
