@@ -18,7 +18,8 @@ import com.somedamnmusic.database.UnexplainableDatabaseServiceException;
 
 @Singleton
 public class RedisDatabaseService implements DatabaseService {
-	public static final int DEFAULT_PORT = 6379;
+	// This is useless now but will come handy if we need to do multidatabase sometime later
+	public static final String CURRENT_SERVER_PREFIX = "SERVER01.";
 	public static final int DEFAULT_TIMEOUT = 2000;
 	private final JedisPool pool;
 	
@@ -54,7 +55,7 @@ public class RedisDatabaseService implements DatabaseService {
 		}
 		Jedis conn = this.getConnection();
 		try {
-			String result = conn.get(key);
+			String result = conn.get(CURRENT_SERVER_PREFIX + key);
 			if(result == null) {
 				throw new NoResultException();
 			}
@@ -70,7 +71,7 @@ public class RedisDatabaseService implements DatabaseService {
 	public void remove(String key) throws UnexplainableDatabaseServiceException {
 		Jedis conn = this.getConnection();
 		try {
-			conn.del(key);
+			conn.del(CURRENT_SERVER_PREFIX + key);
 		} catch(JedisException e) {
 			throw new UnexplainableDatabaseServiceException(e);
 		} finally {
@@ -83,7 +84,7 @@ public class RedisDatabaseService implements DatabaseService {
 			throws UnexplainableDatabaseServiceException {
 		Jedis conn = this.getConnection();
 		try {
-			conn.set(key, content.toStringUtf8());
+			conn.set(CURRENT_SERVER_PREFIX + key, content.toStringUtf8());
 		} catch(JedisException e) {
 			throw new UnexplainableDatabaseServiceException(e);
 		} finally {
