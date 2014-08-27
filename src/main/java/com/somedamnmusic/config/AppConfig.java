@@ -6,6 +6,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
+import com.google.inject.servlet.ServletModule;
 import com.google.inject.servlet.SessionScoped;
 import com.google.sitebricks.SitebricksModule;
 import com.somedamnmusic.apis.DatabaseService;
@@ -25,14 +26,21 @@ import com.somedamnmusic.jobs.UpdateUserJob.UpdateUserJobFactory;
 import com.somedamnmusic.mail.MailServiceImpl;
 import com.somedamnmusic.pages.MainPage;
 import com.somedamnmusic.session.Session;
+import com.somedamnmusic.session.SessionFilter;
 
 public class AppConfig extends com.google.inject.servlet.GuiceServletContextListener {
 
 	@Override
 	protected Injector getInjector() {
 		Injector injector = Guice.createInjector ( 
+				new ServletModule() {
+					@Override
+					protected void configureServlets() {
+						filter("/*").through(SessionFilter.class);
+					  }
+				},
 				new SitebricksModule() {
-			         protected void configureSitebricks() {
+			         protected void configureSitebricks() {			        	 
 			                // scan class Example's package and all descendants
 			                scan(MainPage.class.getPackage());
 			                
