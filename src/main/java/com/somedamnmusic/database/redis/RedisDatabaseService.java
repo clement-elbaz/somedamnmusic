@@ -105,4 +105,17 @@ public class RedisDatabaseService implements DatabaseService {
 		
 	}
 
+	@Override
+	public void expires(String key, int seconds)
+			throws UnexplainableDatabaseServiceException {
+		Jedis conn = this.getConnection();
+		try {
+			conn.expire(key, seconds);
+		} catch(JedisException e) {
+			throw new UnexplainableDatabaseServiceException(e);
+		} finally {
+			this.closeConn(conn);
+		}
+	}
+
 }

@@ -30,6 +30,14 @@ public interface DatabaseService {
 	void set (String key, ByteString content) throws UnexplainableDatabaseServiceException;
 	
 	/**
+	 * Set the expiration time of some data
+	 * @param key
+	 * @param seconds
+	 * @throws UnexplainableDatabaseServiceException
+	 */
+	void expires(String key, int seconds) throws UnexplainableDatabaseServiceException;
+	
+	/**
 	 * Get a brand new random available key.
 	 * @return
 	 */

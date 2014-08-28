@@ -48,4 +48,11 @@ public class DumbDatabase implements DatabaseService {
 		database.remove(key);
 	}
 
+	@Override
+	public void expires(String key, int seconds)
+			throws UnexplainableDatabaseServiceException {
+		// not implemented in dumb mode
+		
+	}
+
 }
