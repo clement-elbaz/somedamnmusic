@@ -9,10 +9,10 @@ import com.somedamnmusic.database.UnexplainableDatabaseServiceException;
 import com.somedamnmusic.mail.UnexplainableEmailServiceException;
 
 public class LoginJob implements Runnable {
-	
-	final MailService mailService;
-	final DatabaseService databaseService;
-	final String email;
+	private static final int TOKEN_LINK_DURATION = 60 * 60; // one hour
+	private final MailService mailService;
+	private final DatabaseService databaseService;
+	private final String email;
 	
 	@Inject
 	public LoginJob(MailService mailService, final DatabaseService databaseService,  @Assisted String email) {
@@ -26,6 +26,7 @@ public class LoginJob implements Runnable {
 		try {
 			token = databaseService.getAvailablekey();
 			databaseService.set(token, ByteString.copyFromUtf8(email));
+			databaseService.expires(token, TOKEN_LINK_DURATION);
 			mailService.sendLoginEmail(email, token);
 		} catch (UnexplainableEmailServiceException e) {
 			e.printStackTrace(); // TODO log
