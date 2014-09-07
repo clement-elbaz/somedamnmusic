@@ -47,9 +47,10 @@
 			<li><a  data-toggle="modal" style="cursor:pointer;" data-target="#signinModal">Sign in</a></li>
 			@ShowIf(logged)
 			<li><a href="/profile/${user.userId}">My profile</a></li>
+			<li><a href="/all">All</a></li>
 			@ShowIf(logged)
 			<li><a href="/signout">Log out</a></li>
-			<li><a href="/all">All</a></li>
+			
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -110,7 +111,10 @@
 	@PostMusicModal(returnURL="/")<ul/>
 	
 	<div style="margin-left:150px;">
-	This website was hacked together by <a href="http://clement-elbaz.net">Clément Elbaz</a> in a few days during summer 2014.
+	<p>
+		This website was hacked together by <a href="http://clement-elbaz.net">Clément Elbaz</a> in a few days during summer 2014.
+		Photographs by <a href="http://littlevisuals.co">littlevisuals</a> via <a href="http://www.pexels.com">Pexels</a>.
+	</p>
 	</div>
 
     

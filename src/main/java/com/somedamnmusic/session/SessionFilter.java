@@ -1,6 +1,8 @@
 package com.somedamnmusic.session;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -53,32 +55,51 @@ public class SessionFilter implements Filter {
 		
 		Session session = sessionProvider.get();
 		
-		boolean setCookie = false;
-		try {
-			String userIdFromCookie = this.extractUserIdFromTokenCookie(httpRequest);
-			if(StringUtils.isBlank(session.getUserId())) {
-				session.setUserId(userIdFromCookie);
-				// if user has a valid cookie but no session, it is a good time to renew his cookie
-				setCookie = true;
-			}
-		} catch(NoUserException e) {
-			if(StringUtils.isNotBlank(session.getUserId())) {
-				// if session is set but no cookie, it is a log in
-				setCookie = true;
-			}
-		} catch (UnexplainableDatabaseServiceException e) {
-			e.printStackTrace(); // TODO log
-		}
-		
-		if(setCookie) {
+		if(session.isJustLoggedOut()) {
+			this.logOut(session, httpResponse, Arrays.asList(httpRequest.getCookies()));
+		} else {
+			boolean setCookie = false;
 			try {
-				this.setTokenCookie(httpRequest, httpResponse, session.getUserId());
+				String userIdFromCookie = this.extractUserIdFromTokenCookie(httpRequest);
+				if(StringUtils.isBlank(session.getUserId())) {
+					session.setUserId(userIdFromCookie);
+					// if user has a valid cookie but no session, it is a good time to renew his cookie
+					setCookie = true;
+				}
+			} catch(NoUserException e) {
+				if(StringUtils.isNotBlank(session.getUserId())) {
+					// if session is set but no cookie, it is a log in
+					setCookie = true;
+				}
 			} catch (UnexplainableDatabaseServiceException e) {
 				e.printStackTrace(); // TODO log
 			}
+			
+			if(setCookie) {
+				try {
+					this.setTokenCookie(httpRequest, httpResponse, session.getUserId());
+				} catch (UnexplainableDatabaseServiceException e) {
+					e.printStackTrace(); // TODO log
+				}
+			}
 		}
 		
+		
+		
 		chain.doFilter(request, response);
+	}
+
+	private void logOut(Session session, HttpServletResponse response, List<Cookie> cookies) {
+		session.setJustLoggedOut(false);
+		session.setUserId(null);
+		for(Cookie cookie : cookies) {
+			if(COOKIE_TOKEN.equals(cookie.getName())) {
+				cookie.setMaxAge(0);
+				response.addCookie(cookie);
+				break;
+			}
+		}
+		
 	}
 
 	private void setTokenCookie(HttpServletRequest request,

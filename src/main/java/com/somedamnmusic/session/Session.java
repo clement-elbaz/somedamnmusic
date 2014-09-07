@@ -8,6 +8,7 @@ public class Session {
 	private String userId;
 	private MusicPost justPostedMusic;
 	private User justFollowedUser;
+	private boolean justLoggedOut;
 
 	public String getUserId() {
 		return userId;
@@ -37,5 +38,13 @@ public class Session {
 		User result = justFollowedUser;
 		justFollowedUser = null;
 		return result;
+	}
+
+	public boolean isJustLoggedOut() {
+		return justLoggedOut;
+	}
+
+	public void setJustLoggedOut(boolean justLoggedOut) {
+		this.justLoggedOut = justLoggedOut;
 	}
 }
