@@ -2,8 +2,6 @@ package com.somedamnmusic.pages;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.google.sitebricks.At;
@@ -19,42 +17,30 @@ import com.somedamnmusic.pages.DisplayFeed.FeedPost;
 import com.somedamnmusic.session.Session;
 
 @At("/profile/:userId")
-public class ProfilePage {
+public class ProfilePage extends UserPage {
 	private final UserService userService;
 	private final FeedService feedService;
 	private final FollowService followService;
 	private final Session session;
 
-	private User currentUser;
 	private User user;
 	private List<FeedPost> feed;
 
 	@Inject
 	public ProfilePage(UserService userService, FeedService feedService, FollowService followService, Session session) {
+		super(session, userService);
 		this.userService = userService;
 		this.feedService = feedService;
 		this.followService = followService;
 		this.session = session;
-
-		try {
-			if(StringUtils.isNotBlank(session.getUserId())) {
-				this.currentUser = userService.getUserFromId(session.getUserId());
-			}
-		} catch (NoUserException e) {
-			// TODO log
-			e.printStackTrace();
-		} catch (UnexplainableUserServiceException e) {
-			// TODO log
-			e.printStackTrace();
-		}
 	}
 
 	@Get
 	public void get(@Named("userId")String userId) {
 		User followedUser = this.session.getJustFollowedUser();
 		if(followedUser != null) {
-			followService.followUser(currentUser, followedUser);
-			System.out.println(currentUser.getFirstName()+" just followed "+followedUser.getFirstName());
+			followService.followUser(this.getCurrentUser(), followedUser);
+			System.out.println(this.getCurrentUser().getFirstName()+" just followed "+followedUser.getFirstName());
 		}
 
 		try {
@@ -71,10 +57,6 @@ public class ProfilePage {
 		}
 	}
 
-	public boolean isLogged() {
-		return this.currentUser != null;
-	}
-
 	public boolean isUserExists() {
 		return this.user != null;
 	}
@@ -85,13 +67,6 @@ public class ProfilePage {
 
 	public List<FeedPost> getFeed() {
 		return feed;
-	}
-
-	public String getThisUserId() {
-		if(currentUser != null) {
-			return currentUser.getUserId();
-		}
-		return null;
 	}
 
 	public String getProfileURL() {

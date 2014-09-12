@@ -16,37 +16,18 @@ import com.somedamnmusic.pages.DisplayFeed.FeedPost;
 import com.somedamnmusic.session.Session;
 
 @At("/")
-public class MainPage {
+public class MainPage extends UserPage {
 	private final FeedService feedService;
-	private User currentUser;
 
 	@Inject
 	public MainPage(FeedService feedService, Session session, UserService userService) {
+		super(session, userService);
 		this.feedService = feedService;
-		try {
-			if(StringUtils.isNotBlank(session.getUserId())) {
-				this.currentUser = userService.getUserFromId(session.getUserId());
-			}
-		} catch (NoUserException e) {
-			// TODO log
-			e.printStackTrace();
-		} catch (UnexplainableUserServiceException e) {
-			// TODO log
-			e.printStackTrace();
-		}
-	}
-
-	public boolean isLogged() {
-		return currentUser != null;
-	}
-
-	public User getUser() {
-		return currentUser;
 	}
 
 	public List<FeedPost> getUserFeed() {
 		try {
-			return feedService.getFeed(currentUser.getWhatIFollowFeedId());
+			return feedService.getFeed(this.getCurrentUser().getWhatIFollowFeedId());
 		} catch (UnexplainableFeedServiceException e) {
 			// TODO log
 			e.printStackTrace();
