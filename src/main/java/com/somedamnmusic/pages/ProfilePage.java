@@ -60,6 +60,20 @@ public class ProfilePage extends UserPage {
 	public boolean isUserExists() {
 		return this.user != null;
 	}
+	
+	public boolean isCurrentProfile() {
+		if(!this.isLogged()) {
+			return false;
+		}
+		if(this.user == null) {
+			return false;
+		}
+		return this.getCurrentUser().getUserId().equals(this.user.getUserId());
+	}
+	
+	public String getMyMusicCSS() {
+		return this.isCurrentProfile() ? "active" : "";
+	}
 
 	public User getUser() {
 		return user;
