@@ -2,7 +2,7 @@ package com.somedamnmusic.apis.exception;
 
 public class NoMusicPostException extends Exception {
 
-	public NoMusicPostException(NoResultException e) {
+	public NoMusicPostException(Exception e) {
 		super(e);
 	}
 

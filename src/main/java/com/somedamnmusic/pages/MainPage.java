@@ -2,16 +2,11 @@ package com.somedamnmusic.pages;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.inject.Inject;
 import com.google.sitebricks.At;
 import com.somedamnmusic.apis.FeedService;
 import com.somedamnmusic.apis.UserService;
-import com.somedamnmusic.apis.exception.NoUserException;
 import com.somedamnmusic.apis.exception.UnexplainableFeedServiceException;
-import com.somedamnmusic.apis.exception.UnexplainableUserServiceException;
-import com.somedamnmusic.entities.Entities.User;
 import com.somedamnmusic.pages.DisplayFeed.FeedPost;
 import com.somedamnmusic.session.Session;
 

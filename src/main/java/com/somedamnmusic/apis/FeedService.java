@@ -159,7 +159,7 @@ public class FeedService {
 		}
 	}
 
-	private Topic getTopic(String topicId) throws UnexplainableFeedServiceException, NoTopicException {
+	public Topic getTopic(String topicId) throws UnexplainableFeedServiceException, NoTopicException {
 		ByteString content;
 		try {
 			content = db.get(topicId);
@@ -173,7 +173,7 @@ public class FeedService {
 		}
 	}
 
-	private MusicPost getMusicPost(String postId) throws UnexplainableFeedServiceException, NoMusicPostException {
+	public MusicPost getMusicPost(String postId) throws UnexplainableFeedServiceException, NoMusicPostException {
 		try {
 			ByteString content = db.get(postId);
 			return MusicPost.parseFrom(content);
