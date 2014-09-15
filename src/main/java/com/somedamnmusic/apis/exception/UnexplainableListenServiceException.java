@@ -3,7 +3,7 @@ package com.somedamnmusic.apis.exception;
 public class UnexplainableListenServiceException extends Exception {
 
 	public UnexplainableListenServiceException(
-			UnexplainableFeedServiceException e) {
+			Exception e) {
 		super(e);
 	}
 

@@ -6,6 +6,10 @@ public class NoMusicPostException extends Exception {
 		super(e);
 	}
 
+	public NoMusicPostException() {
+		super();
+	}
+
 	/**
 	 * 
 	 */

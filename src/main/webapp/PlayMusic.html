@@ -1,17 +1,5 @@
 <html>
 	<body>
-		<div id="player"></div>
-		
-		@ShowIf(notFound)
-		<div>Not found !</div>
-		
-		<a href="/listen/track/${feedId}/${previousTrackId}">previous</a>
-		
-		<form id="next" action="/listen/next/${feedId}">
-			Random<input type="checkbox" name="random" value="yes">
-		</form>
-		
-		
 		<script src="http://www.youtube.com/player_api"></script>
 
 		<script>
@@ -34,14 +22,36 @@
 			function onPlayerReady(event) {
 			event.target.playVideo();
 			}
+			
+			function nextTrack() {
+			document.forms["next"].submit();
+			}
 
 			// when video ends
 			function onPlayerStateChange(event) {
 			if(event.data === 0) {
-			alert('done');
+				nextTrack();
 			}
 			}
-
 		</script>
+	
+		
+		
+		<a href="/listen/track/${feedId}/${previousTrackId}">previous</a>
+		<a href="javascript: nextTrack()">next</a>
+		
+		<div id="player"></div>
+		
+		@ShowIf(notFound)
+		<div>Not found !</div>
+		
+		<form id="next" action="/listen/next/${feedId}" method="POST">
+			<input type="hidden" name="trackId" value="${trackId}"/>
+			Random<input type="checkbox" name="random" value="true"/>
+			<input type='submit' name='sendForm' value='Send'  class='button'/>
+		</form>
+		
+		
+		
 	</body>
 </html>
