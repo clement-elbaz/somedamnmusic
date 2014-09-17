@@ -35,10 +35,11 @@ public class PlayMusic extends UserPage {
 		try {
 			this.musicPost = listenService.getMusic(feedId, trackId);
 			this.trackId = Integer.parseInt(trackId);
-			this.previousTrackId = this.trackId - 1;
+			this.previousTrackId = this.trackId + 1;
 		} catch (UnexplainableListenServiceException e) {
 			// TODO log
 			e.printStackTrace();
+			this.notFound = true;
 		} catch (NoMusicPostException e) {
 			this.notFound = true;
 		}
