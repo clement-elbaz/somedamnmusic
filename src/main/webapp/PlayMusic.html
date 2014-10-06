@@ -54,7 +54,8 @@
 			videoId: '${musicPost.youtubeId}',
 			events: {
 			'onReady': onPlayerReady,
-			'onStateChange': onPlayerStateChange
+			'onStateChange': onPlayerStateChange,
+			"onError" : onPlayerError
 			}
 			});
 			}
@@ -73,6 +74,10 @@
 			if(event.data === 0) {
 				nextTrack();
 			}
+			}
+			
+			function onPlayerError(event) {
+				nextTrack();
 			}
 		</script>
 	
