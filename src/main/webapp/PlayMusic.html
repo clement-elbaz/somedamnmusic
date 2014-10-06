@@ -82,7 +82,7 @@
 		</script>
 	
 		<h3><span class="label label-default">${musicPost.description}</span></h3>
-		<h1 style="vertical-align:text-top;"><a href="/listen/track/${feedId}/${previousTrackId}"><span class="glyphicon glyphicon-backward"></span></a>
+		<h1 style="vertical-align:text-top;"><a href="/listen/${randomOrSequence}/track/${feedId}/${previousTrackId}"><span class="glyphicon glyphicon-backward"></span></a>
 		<div id="player"></div>
 		<a href="javascript: nextTrack()"><span class="glyphicon glyphicon-forward"></span></a></h1>
 		
@@ -92,8 +92,11 @@
 		
 		<form id="next" action="/listen/next/${feedId}" method="POST">
 			<input type="hidden" name="trackId" value="${trackId}"/>
-			<input type="checkbox" name="random" value="true"/> <span class="label label-info">Random</span>
-			<!-- <input type='submit' name='sendForm' value='Send'  class='button'/> -->
+			@ShowIf(random)
+			<input type="checkbox" checked name="random" value="true"/>
+			@ShowIf(!random)
+			<input type="checkbox" name="random" value="true"/> 
+			<span class="label label-info">Random</span>
 		</form>
     </div>
     

@@ -27,7 +27,7 @@ public class NextTrack {
 			final int trackIdInt = Integer.parseInt(trackId);
 			final int nextTrackId = this.listenService.nextTrack(feedId, trackIdInt, randomBool);
 		
-			return "/listen/track/"+feedId+"/"+nextTrackId;
+			return "/listen/"+this.computeRandomString(randomBool)+"/track/"+feedId+"/"+nextTrackId;
 		} catch(NumberFormatException e) {
 			return "http://youlittlehacker.com";
 		} catch (NoMusicPostException e) {
@@ -39,6 +39,10 @@ public class NextTrack {
 		}
 	}
 	
+	private String computeRandomString(boolean randomBool) {
+		return randomBool ? "random" : "sequence";
+	}
+
 	public String getRandom() {
 		return random;
 	}
