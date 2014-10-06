@@ -12,7 +12,6 @@ import com.google.sitebricks.SitebricksModule;
 import com.somedamnmusic.apis.DatabaseService;
 import com.somedamnmusic.apis.MailService;
 import com.somedamnmusic.database.redis.RedisDatabaseService;
-import com.somedamnmusic.dumb.DumbDatabase;
 import com.somedamnmusic.jobs.JobService;
 import com.somedamnmusic.jobs.LoginJob;
 import com.somedamnmusic.jobs.LoginJob.LoginJobFactory;

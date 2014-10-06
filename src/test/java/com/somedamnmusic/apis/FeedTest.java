@@ -1,7 +1,5 @@
 package com.somedamnmusic.apis;
 
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +19,7 @@ import com.somedamnmusic.jobs.PostMusicJob;
 import com.somedamnmusic.jobs.PostMusicJob.PostMusicJobFactory;
 import com.somedamnmusic.jobs.PostMusicOnFeedJob;
 import com.somedamnmusic.jobs.PostMusicOnFeedJob.PostMusicOnFeedJobFactory;
-import com.somedamnmusic.pages.DisplayFeed.FeedPost;
+import com.somedamnmusic.pages.DisplayFeed.FormattedFeed;
 import com.somedamnmusic.session.Session;
 
 public class FeedTest {
@@ -91,15 +89,15 @@ public class FeedTest {
 			Assert.fail(e.toString());
 		}
 
-		List<FeedPost> feed;
+		FormattedFeed feed;
 		try {
 			feed = feedService.getFeed(user.getWhatIPostFeedId());
 			
 			Assert.assertNotNull(feed);
-			Assert.assertEquals(1, feed.size());
+			Assert.assertEquals(1, feed.feedPosts.size());
 
-			Assert.assertEquals("00000000", feed.get(0).youtubeId);
-			Assert.assertTrue(feed.get(0).isYoutube);
+			Assert.assertEquals("00000000", feed.feedPosts.get(0).youtubeId);
+			Assert.assertTrue(feed.feedPosts.get(0).isYoutube);
 		} catch (UnexplainableFeedServiceException e) {
 			Assert.fail(e.toString());
 		}

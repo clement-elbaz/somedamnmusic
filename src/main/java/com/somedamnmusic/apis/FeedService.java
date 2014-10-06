@@ -25,6 +25,7 @@ import com.somedamnmusic.jobs.JobService;
 import com.somedamnmusic.jobs.PostMusicJob;
 import com.somedamnmusic.jobs.PostMusicJob.PostMusicJobFactory;
 import com.somedamnmusic.pages.DisplayFeed.FeedPost;
+import com.somedamnmusic.pages.DisplayFeed.FormattedFeed;
 import com.somedamnmusic.session.Session;
 
 public class FeedService {
@@ -80,8 +81,10 @@ public class FeedService {
 	 * @param feedId
 	 * @return
 	 */
-	public List<FeedPost> getFeed(String feedId) throws UnexplainableFeedServiceException {
+	public FormattedFeed getFeed(String feedId) throws UnexplainableFeedServiceException {
 		try {
+			FormattedFeed result = new FormattedFeed();
+			result.feedId = feedId;
 			if(PUBLIC_GLOBAL_FEED.equals(feedId)) {
 				this.initPublicFeedIfNecessary();
 			}
@@ -90,15 +93,17 @@ public class FeedService {
 			if(!validate(feedId, justPostedMusic)) {
 				throw new UnexplainableFeedServiceException();
 			}
-			List<FeedPost> feedPosts = new ArrayList<FeedPost>();
+
+			result.feedPosts = new ArrayList<FeedPost>();
 
 			try {
 				Feed feed = this.getFeedObject(feedId);
+				result.firstTrackNumber = StringUtils.EMPTY + (feed.getTopicIdsCount() - 1);  
 				for(int i = 0; i < feed.getTopicIdsCount(); i++) {
 					try {
 						Topic topic = this.getTopic(feed.getTopicIds(i));
 						MusicPost musicPost = this.getMusicPost(topic.getPostIds(0));
-						processMusicPost(musicPost, feedPosts);
+						processMusicPost(musicPost, result.feedPosts);
 					} catch(NoTopicException e) {
 						// do nothing
 					} catch (NoMusicPostException e) {
@@ -112,10 +117,10 @@ public class FeedService {
 			if(justPostedMusic != null) {
 				PostMusicJob postJob = postMusicJobFactory.create(justPostedMusic);
 				jobService.launchJob(postJob);
-				processMusicPost(justPostedMusic, feedPosts);
+				processMusicPost(justPostedMusic, result.feedPosts);
 			}
 
-			return feedPosts;
+			return result;
 		} catch(UnexplainableDatabaseServiceException e) {
 			throw new UnexplainableFeedServiceException(e);
 		}

@@ -1,7 +1,5 @@
 package com.somedamnmusic.apis;
 
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +21,7 @@ import com.somedamnmusic.jobs.PostMusicOnFeedJob;
 import com.somedamnmusic.jobs.PostMusicOnFeedJob.PostMusicOnFeedJobFactory;
 import com.somedamnmusic.jobs.UpdateUserJob;
 import com.somedamnmusic.jobs.UpdateUserJob.UpdateUserJobFactory;
-import com.somedamnmusic.pages.DisplayFeed.FeedPost;
+import com.somedamnmusic.pages.DisplayFeed.FormattedFeed;
 import com.somedamnmusic.session.Session;
 
 public class FollowServiceTest {
@@ -114,11 +112,11 @@ public class FollowServiceTest {
 		
 		try {
 			User updatedUser1 = userService.getUserFromId(user.getUserId());
-			List<FeedPost> feed = feedService.getFeed(updatedUser1.getWhatIFollowFeedId());
+			FormattedFeed feed = feedService.getFeed(updatedUser1.getWhatIFollowFeedId());
 			
 			Assert.assertNotNull(feed);
-			Assert.assertEquals(1, feed.size());
-			Assert.assertEquals("0000000000", feed.get(0).youtubeId);
+			Assert.assertEquals(1, feed.feedPosts.size());
+			Assert.assertEquals("0000000000", feed.feedPosts.get(0).youtubeId);
 			
 		} catch (NoUserException e) {
 			Assert.fail(e.toString());

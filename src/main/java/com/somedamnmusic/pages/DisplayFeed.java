@@ -8,7 +8,13 @@ import com.google.sitebricks.rendering.EmbedAs;
 
 @EmbedAs("DisplayFeed")
 public class DisplayFeed {
-	private List<FeedPost> feedPosts = new ArrayList<FeedPost>();
+	private FormattedFeed formattedFeed;
+	
+	public static class FormattedFeed {
+		public  List<FeedPost> feedPosts = new ArrayList<FeedPost>();
+		public String feedId;
+		public String firstTrackNumber;
+	}
 
 	public static class FeedPost {
 		public String posterFirstname;
@@ -20,20 +26,29 @@ public class DisplayFeed {
 	}
 
 	public List<FeedPost> getFeedPosts() {
-		return feedPosts;
+		return formattedFeed.feedPosts;
 	}
 
-	public void setFeedPosts(List<FeedPost> feedPosts) {
-		if(feedPosts == null) {
-			this.feedPosts = new ArrayList<FeedPost>();
+	public void setFeed(FormattedFeed formattedFeed) {
+		if(formattedFeed == null) {
+			this.formattedFeed = new FormattedFeed();
+			this.formattedFeed.feedPosts = new ArrayList<FeedPost>();
 		} else {
-			this.feedPosts = feedPosts;
-			Collections.reverse(feedPosts);
+			this.formattedFeed = formattedFeed;
+			Collections.reverse(this.formattedFeed.feedPosts);
 		}
 	}
 	
 	public boolean isEmpty() {
-		return feedPosts.isEmpty();
+		return formattedFeed.feedPosts.isEmpty();
+	}
+
+	public String getFeedId() {
+		return formattedFeed.feedId;
+	}
+
+	public String getFirstTrackNumber() {
+		return formattedFeed.firstTrackNumber;
 	}
 
 }

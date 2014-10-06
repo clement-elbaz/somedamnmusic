@@ -1,7 +1,5 @@
 package com.somedamnmusic.pages;
 
-import java.util.List;
-
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.google.sitebricks.At;
@@ -13,7 +11,7 @@ import com.somedamnmusic.apis.exception.NoUserException;
 import com.somedamnmusic.apis.exception.UnexplainableFeedServiceException;
 import com.somedamnmusic.apis.exception.UnexplainableUserServiceException;
 import com.somedamnmusic.entities.Entities.User;
-import com.somedamnmusic.pages.DisplayFeed.FeedPost;
+import com.somedamnmusic.pages.DisplayFeed.FormattedFeed;
 import com.somedamnmusic.session.Session;
 
 @At("/profile/:userId")
@@ -24,7 +22,7 @@ public class ProfilePage extends UserPage {
 	private final Session session;
 
 	private User user;
-	private List<FeedPost> feed;
+	private FormattedFeed feed;
 
 	@Inject
 	public ProfilePage(UserService userService, FeedService feedService, FollowService followService, Session session) {
@@ -79,7 +77,7 @@ public class ProfilePage extends UserPage {
 		return user;
 	}
 
-	public List<FeedPost> getFeed() {
+	public FormattedFeed getFeed() {
 		return feed;
 	}
 
